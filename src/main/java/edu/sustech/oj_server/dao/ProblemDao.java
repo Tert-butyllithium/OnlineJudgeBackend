@@ -1,0 +1,55 @@
+package edu.sustech.oj_server.dao;
+
+import edu.sustech.oj_server.entity.Problem;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
+
+import java.util.List;
+
+@Mapper
+public interface ProblemDao {
+    @Select("select problem_id, title, description, input, output, sample_input, sample_output, spj, hint, source, in_date, time_limit*1000, memory_limit, defunct, accepted, submit, solved from problem where problem_id = #{id}")
+    Problem getProblem(int id);
+
+    @Select("select problem_id, title, description, input, output, sample_input, sample_output, spj, hint, source, in_date, time_limit, memory_limit, defunct, accepted, submit, solved\n" +
+            "from problem where problem_id=(select problem_id from contest_problem where contest_problem.num=#{num} and contest_id=#{contest_id})")
+    Problem getProblemInContest(int contest_id,int num);
+
+    @Select("select num from contest_problem where contest_id=#{contest_id} and problem_id=#{problem_id}")
+    Integer getNumInContest(int contest_id,int problem_id);
+
+    @Select("select problem_id, title, description, input, output, sample_input, sample_output, spj, hint, source, in_date, time_limit*1000, memory_limit, defunct, accepted, submit, solved from problem where defunct='N' order by problem_id limit #{limit} offset #{offset}")
+    List<Problem> listAllProblems(int offset, int limit);
+
+    @Select("select problem_id, title, description, input, output, sample_input, sample_output, spj, hint, source, in_date, time_limit*1000, memory_limit, defunct, accepted, submit, solved from problem order by problem_id limit #{limit} offset #{offset}")
+    List<Problem> listAllProblemsForAdmin(int offset, int limit);
+
+
+    @Select("select count(*) from problem where defunct='N' ")
+    int getNum();
+
+    @Select("select count(*) from problem")
+    int getNumForAdmin();
+
+    @Select("select count(*) from solution where solution.user_id=#{user_id} and solution.problem_id = #{problem_id} and solution.result=4 order by solution_id limit 1")
+    Integer ACinProblems(String user_id,Integer problem_id);
+
+    @Select({"<script>",
+            "select count(*) from solution where " ,
+            "solution.user_id=#{user_id} " ,
+            "and solution.problem_id=#{problem_id} " ,
+            "and result!=4",
+            "<when test='solution_id !=null'> ",
+            "and solution_id &lt; #{solution_id}",
+            "and result !=11",
+            "</when>",
+            "<when test='contest_id !=null'> ",
+            "and contest_id=#{contest_id}",
+            "</when>",
+            "</script>"})
+    Integer Was(String user_id,Integer problem_id,Integer solution_id,Integer contest_id);
+
+    @Select("select count(*) from solution where solution.user_id=#{user_id} and solution.problem_id = #{problem_id} and solution.result=4 and solution.contest_id=#{contest_id} order by solution_id limit 1")
+    Integer ACinContest(String user_id,Integer problem_id,Integer contest_id);
+
+}
