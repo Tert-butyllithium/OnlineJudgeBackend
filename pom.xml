@@ -10,7 +10,7 @@
     </parent>
     <groupId>edu.sustech</groupId>
     <artifactId>oj_server</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.1</version>
     <name>oj_server</name>
     <description>backend of our OJ </description>
 
@@ -20,36 +20,6 @@
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.12</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-thymeleaf</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>2.3</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.quartz-scheduler/quartz -->
-        <dependency>
-            <groupId>org.quartz-scheduler</groupId>
-            <artifactId>quartz</artifactId>
-            <version>2.2.1</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-mail</artifactId>
-            <version>2.2.1.RELEASE</version>
-        </dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -76,23 +46,16 @@
             <version>1.13</version>
         </dependency>
 
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
-            <version>1.2.61</version>
-        </dependency>
-
+<!--        <dependency>-->
+<!--            <groupId>com.fasterxml.jackson.core</groupId>-->
+<!--            <artifactId>jackson-databind</artifactId>-->
+<!--            <version>2.5.0</version>-->
+<!--        </dependency>-->
 
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
         </dependency>
-
-        <dependency>
-            <groupId>org.mariadb.jdbc</groupId>
-            <artifactId>mariadb-java-client</artifactId>
-        </dependency>
-
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-stdlib-jdk8</artifactId>
@@ -103,12 +66,6 @@
             <artifactId>kotlin-test</artifactId>
             <version>${kotlin.version}</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <version>RELEASE</version>
-            <scope>compile</scope>
         </dependency>
     </dependencies>
 

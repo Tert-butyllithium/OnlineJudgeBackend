@@ -1,8 +1,8 @@
 package edu.sustech.oj_server.entity;
 
 import edu.sustech.oj_server.util.HUSTToQDU;
-import edu.sustech.oj_server.toolclass.ErrorStatistic;
-import edu.sustech.oj_server.toolclass.SuccessStatistic;
+import edu.sustech.oj_server.utilclass.ErrorStatistic;
+import edu.sustech.oj_server.utilclass.SuccessStatistic;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -23,18 +23,6 @@ public class Solution {
 
     private Integer contestId;
     private Integer num;
-    private User user;
-    public Boolean checked;
-
-    public String getProblem_display_id() {
-        return problem_display_id;
-    }
-
-    public void setProblem_display_id(String problem_display_id) {
-        this.problem_display_id = problem_display_id;
-    }
-
-    private String problem_display_id;
 
 
     private Object statistic_info;
@@ -131,11 +119,7 @@ public class Solution {
         this.statistic_info = var1;
     }
 
-    public User getUser() {
-        return user;
-    }
-
-    public Solution(Integer id, Integer problem, String user_id, Integer time, Integer memory, Timestamp inDate, int result, Integer language, String ip, Integer contestId, Byte valid, Integer num, Integer codeLength, Timestamp judgetime, BigDecimal passRate, Integer lintError, String judger,Boolean checked) {
+    public Solution( Integer id,  Integer problem,  String user_id,  Integer time,  Integer memory,  Timestamp inDate, int result, Integer language,  String ip,  Integer contestId,  Byte valid,  Integer num,  Integer codeLength,  Timestamp judgetime,  BigDecimal passRate,  Integer lintError,  String judger) {
         this.id = id;
         this.problem = problem.toString();
         this.user_id = user_id;
@@ -151,18 +135,11 @@ public class Solution {
         else{
             this.statistic_info=new ErrorStatistic("sorry, not available");
         }
-        this.checked=checked;
     }
-
-//    public Solution( Integer id,  Integer problem,  String user_id,String nick, Integer time,  Integer memory,  Timestamp inDate,
-//                     int result, Integer language,  String ip,  Integer contestId,  Byte valid,  Integer num,
-//                     Integer codeLength,  Timestamp judgetime,  BigDecimal passRate,  Integer lintError,  String judger) {
-//        this(id,problem,user_id,time,memory,inDate,result,language,ip,contestId,valid,num,codeLength,judgetime,passRate,lintError,judger,false);
-//        this.user=new User(user_id,null,0,0,null,null,null,null,null,null,null,nick,null,false);
-//    }
-//
+    //insert into solution (problem_id,user_id, in_date, language, ip, contest_id)
+    //values (1001,'11712510',now(),0,'172.18.1.122',null);
     public Solution(Integer problem,String username,String language,Integer contestId){
-        this(null,problem,username,null,null,new Timestamp(System.currentTimeMillis()),1,null,"172.18.1.122",contestId,null,null,null,null,null,null,null,false);
+        this(null,problem,username,null,null,new Timestamp(System.currentTimeMillis()),1,null,"172.18.1.122",contestId,null,null,null,null,null,null,null);
         this.language=String.valueOf(HUSTToQDU.translateLanguage(language));
     }
 

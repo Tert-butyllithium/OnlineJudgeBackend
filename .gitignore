@@ -3,7 +3,6 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**
 !**/src/test/**
-cachedrank/
 
 ### STS ###
 .apt_generated
@@ -13,7 +12,6 @@ cachedrank/
 .settings
 .springBeans
 .sts4-cache
-src/main/resources/application.properties
 
 ### IntelliJ IDEA ###
 .idea

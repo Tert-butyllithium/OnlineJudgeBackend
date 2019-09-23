@@ -1,9 +1,8 @@
 package edu.sustech.oj_server.entity;
 
 import edu.sustech.oj_server.util.HUSTToQDU;
-import edu.sustech.oj_server.util.RuntimeInfo;
-import edu.sustech.oj_server.toolclass.ErrorStatistic;
-import edu.sustech.oj_server.toolclass.SuccessStatistic;
+import edu.sustech.oj_server.utilclass.ErrorStatistic;
+import edu.sustech.oj_server.utilclass.SuccessStatistic;
 
 import java.sql.Timestamp;
 
@@ -31,9 +30,6 @@ public class SourceCode {
         this.language = HUSTToQDU.translateLanguage(language);
         if(result==4){
             this.statistic_info=new SuccessStatistic(time/1000,mem);
-        }
-        else if(result==11){
-            this.statistic_info=new ErrorStatistic(RuntimeInfo.getCompileInfo(id));
         }
         else{
             this.statistic_info=new ErrorStatistic("Error message is not visible");
@@ -110,9 +106,5 @@ public class SourceCode {
 
     public void setLanguage(Integer language) {
         this.language = HUSTToQDU.translateLanguage(language);
-    }
-
-    public void setStatistic_info(Object statistic_info) {
-        this.statistic_info = statistic_info;
     }
 }

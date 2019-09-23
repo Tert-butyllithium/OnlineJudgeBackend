@@ -19,8 +19,7 @@ public class LoginUtil {
         try {
             var dig = MessageDigest.getInstance("MD5");
             dig.update(str.getBytes(charset));
-            var res=new BigInteger(1,dig.digest()).toString(16);
-            return res.substring(0,Math.min(32,res.length()));
+            return new BigInteger(1,dig.digest()).toString(16).substring(0,32);
         }catch (Exception e){
             e.printStackTrace();
             return "error";

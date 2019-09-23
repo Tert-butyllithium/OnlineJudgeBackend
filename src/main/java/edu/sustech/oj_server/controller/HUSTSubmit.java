@@ -1,29 +1,19 @@
 package edu.sustech.oj_server.controller;
 
-import com.alibaba.fastjson.JSONObject;
-import edu.sustech.oj_server.dao.*;
-import edu.sustech.oj_server.entity.Contest;
-import edu.sustech.oj_server.entity.Problem;
+import edu.sustech.oj_server.dao.LoginLogDao;
+import edu.sustech.oj_server.dao.ProblemDao;
+import edu.sustech.oj_server.dao.SolutionDao;
+import edu.sustech.oj_server.dao.SourceCodeDao;
 import edu.sustech.oj_server.entity.Solution;
 import edu.sustech.oj_server.entity.User;
 import edu.sustech.oj_server.util.Authentication;
 import edu.sustech.oj_server.util.ReturnType;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.sql.Struct;
-import java.sql.Timestamp;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Objects;
 
 @RestController
 public final class HUSTSubmit {
@@ -35,27 +25,14 @@ public final class HUSTSubmit {
     LoginLogDao loginLogDao;
     @Autowired
     ProblemDao problemDao;
-    @Autowired
-    ContestDao contestDao;
-    @Autowired
-    BalloonDao balloonDao;
 
-    private static final int CODE_LENGTH_LIMIT = 56 * 1024;
-
-    @Value("${judge.server}")
-    private String judge_server;
-
-    @Value("${judge.token}")
-    private String token;
-
-    //    @Autowired
+//    @Autowired
     private final CachedRank cachedRank;
-
     public HUSTSubmit(CachedRank cachedRank) {
         this.cachedRank = cachedRank;
     }
 
-    private static class submitId {
+    private static class submitId{
         Integer submission_id;
 
         public void setSubmission_id(Integer submission_id) {
@@ -71,7 +48,7 @@ public final class HUSTSubmit {
         }
     }
 
-    private static class Code {
+    private static class Code{
         String code;
         Integer contest_id;
         String language;
@@ -126,135 +103,39 @@ public final class HUSTSubmit {
         }
     }
 
-    @GetMapping("/api/admin/submission/rejudge")
-    public ReturnType rejudge(@RequestParam Integer id, HttpServletRequest request) {
-        User user = Authentication.getUser(request);
-        if (user == null) {
-            return new ReturnType<>("error", "Please login first");
-        }
-        if (!Authentication.isAdministrator(user)) {
-            return new ReturnType<>("error", "You are not Administrator");
-        }
-        solutionDao.rejugde(id);
-        submitJudger("http://" + judge_server, id);
-        return new ReturnType<>(null);
-
-    }
-
     @PostMapping("/api/submission")
-    public ReturnType submitting(@RequestBody Code code, HttpServletRequest request) {
-        String myname = null;
-        User user = Authentication.getUser(request);
-        if (user != null) {
-            myname = user.getId();
+    public ReturnType submitting(@RequestBody Code code, HttpServletRequest request){
+        String myname=null;
+        User user= Authentication.getUser(request);
+        if(user!=null){
+            myname=user.getId();
         }
-        if (myname == null) return new ReturnType<>("error", "Please login first");
+        if(myname==null) return new ReturnType<>("error","Please login first");
 
-        if(code==null||code.problem_id==null){
-            return new ReturnType("error","Problem does not exist");
-        }
-
-        Problem p =problemDao.getProblem(code.problem_id);
-        if(code.contest_id==null&&(!Authentication.isAdministrator(user))&& Objects.equals(p.getDefunct(), "Y")){
-            return new ReturnType("error","Problem does not exist");
-        }
-
-        Solution tmp = new Solution(code.problem_id, myname, code.language, code.contest_id);
-        if (code.contest_id != null) {
-            Integer num = problemDao.getNumInContest(code.contest_id, code.problem_id);
-            if (num == null) {
+        Solution tmp =new Solution(code.problem_id,myname,code.language,code.contest_id);
+        if(code.contest_id!=null){
+            Integer num=problemDao.getNumInContest(code.contest_id,code.problem_id);
+            if(num==null){
                 tmp.setNum(-1);
                 tmp.setContestId(null);
-            } else {
+            }
+            else{
                 tmp.setNum(num);
             }
-        } else {
-            tmp.setNum(-1);
-        }
-        if (code.code.length() > CODE_LENGTH_LIMIT) {
-            return new ReturnType("error", "Code length limit exceed");
-        }
-        if(code.contest_id!=null){
-            Contest contest=contestDao.getContest(code.contest_id);
-            var now=new Timestamp(System.currentTimeMillis());
-            System.out.println(now);
-            if((!now.after(contest.getStart_time()))||(!now.before(contest.getEnd_time()))){
-                return new ReturnType("error", "error");
-            }
-        }
-
-        solutionDao.submit(tmp);
-        final Integer id = Integer.parseInt(tmp.getId());
-        sourceCodeDao.submit(id, code.code);
-        // should be optimized!
-        solutionDao.update(id);
-//        if (code.contest_id != null) {
-//            cachedRank.refresh(code.contest_id);
-//        }
-
-        boolean judging = submitJudger("http://" + judge_server, id);
-
-        return new ReturnType<>(new submitId(id));
-    }
-
-    @PostMapping("/api/finishjudge")
-    public ReturnType finishJudge(@RequestBody LinkedHashMap request) {
-        Integer solution_id = (Integer) request.get("solution_id");
-        String token = (String) request.get("token");
-        if (!token.equals(this.token)) {
-            return new ReturnType("error", "error");
-        }
-//        System.out.println("Message from the judge server");
-        Solution solution = solutionDao.getSolution(solution_id);
-        Integer contest_id = solution.getContestId();
-        if (contest_id != null) {
-            Integer frozen = contestDao.getFrozen(contest_id);
-            if(frozen==null){
-                frozen=0;
-            }
-            if (frozen != 0)
-                cachedRank.refresh(contest_id, frozen);
-            cachedRank.refresh(contest_id, 0);
         }
         else{
-            Integer problem_id=Integer.parseInt(solution.getProblem());
-            int ac=problemDao.getProblemAC(problem_id);
-            int all=problemDao.getProblemSubmission(problem_id);
-            problemDao.updateSubmissionInfo(problem_id,ac,all);
+            tmp.setNum(-1);
         }
-        return new ReturnType(null);
-    }
-
-
-    /**
-     * @param url        The restful API of judger
-     * @param solutionId The solution id which will be judged.
-     * @return boolean value with true representing adding successfully while false representing fail
-     * Note that this api is asked to run the Judger first.
-     * So that it would throw an exception if the judger is not running.
-     */
-    private boolean submitJudger(String url, Integer solutionId) {
-        RestTemplate client = new RestTemplate();
-        HttpHeaders header = new HttpHeaders();
-        HttpMethod method = HttpMethod.POST;
-        header.setContentType(MediaType.APPLICATION_JSON);
-
-        MultiValueMap<String, Object> requestBody = new LinkedMultiValueMap();
-        requestBody.put("solutionId", Collections.singletonList((solutionId.intValue())));
-        HttpEntity<MultiValueMap> requestEntity = new HttpEntity<>(requestBody, header);
-
-        try {
-            ResponseEntity<String> response = client.exchange(url, method, requestEntity, String.class);
-            JSONObject body = JSONObject.parseObject(response.getBody());
-            if (body.get("result").equals(1)) {
-                return true;
-            }
-        } catch (org.springframework.web.client.ResourceAccessException e) {
-//            throw new RuntimeException("Please running the code of judger first. Please check the input url.");
-            return true;
+        System.out.println(solutionDao);
+        solutionDao.submit(tmp);
+        final Integer id=Integer.parseInt(tmp.getId());
+        sourceCodeDao.submit(id,code.code);
+        sourceCodeDao.submit2(id,code.code);
+        solutionDao.update(id);
+        if(code.contest_id!=null){
+            cachedRank.refresh(code.contest_id);
         }
-        return false;
+        return new ReturnType<>(new submitId(id));
     }
-
 
 }

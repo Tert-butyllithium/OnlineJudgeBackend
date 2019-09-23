@@ -1,8 +1,8 @@
 package edu.sustech.oj_server.entity
 
-import edu.sustech.oj_server.toolclass.IOMode
-import edu.sustech.oj_server.toolclass.Person
-import edu.sustech.oj_server.toolclass.Sample
+import edu.sustech.oj_server.utilclass.IOMode
+import edu.sustech.oj_server.utilclass.Person
+import edu.sustech.oj_server.utilclass.Sample
 import java.sql.Timestamp
 
 open class Problem {
@@ -15,7 +15,7 @@ open class Problem {
 //    var sampleInput: String? = null
 //    var sampleOutput: String? = null
     var _id:String? = null
-    var samples:ArrayList<Sample>?=null
+    var samples:List<Sample>?=null
     var spj: Boolean? = null
     var hint: String? = null
     var source: String? = null
@@ -38,13 +38,6 @@ open class Problem {
     var contest:Int?=null
     var my_status:Int?=null
     var languages:List<String>?=null
-    var test_case_id:String?=null
-    var visible:Boolean?=null
-        set(value) {
-            field = value
-            this.defunct= if (value==true) "N" else "Y"
-        }
-
 
     constructor(id: Int?, title: String?, description: String?, input: String?, output: String?, sampleInput: String?, sampleOutput: String?, spj: String?, hint: String?, source: String?, inDate: Timestamp?, time_lim: Int, memory_limit: Int?, defunct: String?, accepted: Int, submission_number: Int, solved: Int) {
         this.id = id
@@ -55,8 +48,7 @@ open class Problem {
         this.output_description = output
 //        this.sampleInput = sampleInput
 //        this.sampleOutput = sampleOutput
-        this.samples= ArrayList()
-        this.samples!!.add(Sample(sampleInput, sampleOutput))
+        this.samples= listOf(Sample(sampleInput, sampleOutput))
 //        this.spj = spj
         if(spj == "Y"){
             this.spj = true
@@ -79,7 +71,7 @@ open class Problem {
         this.tags = listOf("unknown")
         this.created_by = Person("root", null)
         this.last_update_time = inDate
-        this.languages= listOf("C","C++","Java","Python3","Kotlin")
+        this.languages= listOf("C","C++","Java")
         this.template=CodeTemplate()
 //        println(this.time_limit)
     }
