@@ -55,6 +55,14 @@ public class ProblemController {
         }
         else{
             var res= problemDao.getProblem(id);
+            User user= Authentication.getUser(request);
+            if(user!=null){
+                if(problemDao.ACinProblems(user.getId(),res.getId())>0)
+                    res.setMy_status(0);
+                else if(problemDao.Was(user.getId(),res.getId(),null,null)>0){
+                    res.setMy_status(-2);
+                }
+            }
             return new ReturnType<>(res);
         }
     }
