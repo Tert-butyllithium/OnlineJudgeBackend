@@ -103,4 +103,5 @@ public class SolutionController {
             return new ReturnType<>(new ReturnListType<>(res,solutionDao.getNumInContest(username,result,real_num,contest_id)));
 
     }
+
 }
