@@ -1,76 +1,33 @@
 package edu.sustech.oj_server.controller;
 
-import edu.sustech.oj_server.dao.ContestDao;
-import edu.sustech.oj_server.dao.NewsDao;
-import edu.sustech.oj_server.entity.Contest;
-import edu.sustech.oj_server.entity.News;
-import edu.sustech.oj_server.entity.User;
-import edu.sustech.oj_server.util.Authentication;
-import edu.sustech.oj_server.util.ReturnListType;
-import edu.sustech.oj_server.util.ReturnType;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletRequest;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class AnnouncementController {
 
-    @Autowired
-    private NewsDao newsDao;
-    @Autowired
-    private ContestDao contestDao;
-
-
     @GetMapping("/api/announcement")
-    public ReturnType<?> getAnnouncement(@RequestParam(value = "contest_id",required = false) Integer contest_id){
-        if(contest_id==null) {
-            List<News> tmp = newsDao.listAllVisibleNews();
-            ArrayList<News> list = new ArrayList<>(tmp);
-            return new ReturnType<>(new ReturnListType<>(list, list.size()));
-        }
-        else{
-            List<News> tmp = newsDao.listAllVisibleNewsForContest(contest_id);
-            ArrayList<News> list = new ArrayList<>(tmp);
-            return new ReturnType<>(list);
-        }
-    }
-
-    @GetMapping("/api/contest/announcement")
-    public ReturnType<?> getContestAnnouncement(@RequestParam(value = "contest_id",required = false) Integer contest_id){
-        return getAnnouncement(contest_id);
-    }
-
-    @GetMapping("/api/contest/clarification")
-    public ReturnType<?> getContestClarification(@RequestParam("contest_id") Integer contest_id, HttpServletRequest request){
-        User user= Authentication.getUser(request);
-        if(user==null){
-            return new ReturnType<>(new ArrayList<>());
-        }
-        return new ReturnType<>(newsDao.listClarification(contest_id,user.getId()));
-    }
-
-    @PostMapping("/api/contest/clarification")
-    public ReturnType<?> sendClarification(@RequestBody LinkedHashMap map, HttpServletRequest request){
-        Integer contest_id=Integer.parseInt(map.get("contest_id").toString());
-        String message = map.get("message").toString();
-        User user=Authentication.getUser(request);
-        if(user==null){
-            return new ReturnType<>("error","Please login first");
-        }
-        Timestamp now=new Timestamp(System.currentTimeMillis());
-        Contest contest=contestDao.getContest(contest_id);
-        if(contest==null|| !contest.getVisible()){
-            return new ReturnType<>("error","No such contest");
-        }
-        if(now.after(contest.getEnd_time())||now.before(contest.getStart_time())){
-            return new ReturnType<>("error","error");
-        }
-        newsDao.insertClarification(user.getId(),contest_id,message);
-        return new ReturnType<>(null);
+    public String getAnnouncement(){
+        return "{\n" +
+                "    \"error\": null,\n" +
+                "    \"data\": {\n" +
+                "        \"results\": [\n" +
+                "            {\n" +
+                "                \"id\": 1,\n" +
+                "                \"created_by\": {\n" +
+                "                    \"id\": 1,\n" +
+                "                    \"username\": \"root\",\n" +
+                "                    \"real_name\": null\n" +
+                "                },\n" +
+                "                \"title\": \"Lanranforces复制了SUSTech OJ的数据库，但是二者并不互通\",\n" +
+                "                \"content\": \"<p>测试版本，不做任何保证</p>\",\n" +
+                "                \"create_time\": \"2019-10-11T14:29:14.950009Z\",\n" +
+                "                \"last_update_time\": \"2019-10-11T14:29:14.950009Z\",\n" +
+                "                \"visible\": true\n" +
+                "            }\n" +
+                "        ],\n" +
+                "        \"total\": 1\n" +
+                "    }\n" +
+                "}";
     }
 }

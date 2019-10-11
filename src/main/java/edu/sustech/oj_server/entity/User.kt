@@ -1,7 +1,6 @@
 package edu.sustech.oj_server.entity
 
 import edu.sustech.oj_server.util.Authentication
-import edu.sustech.oj_server.util.MTRandom
 import java.sql.Timestamp
 import kotlin.math.abs
 
@@ -25,7 +24,6 @@ open class User {
     val open_api = false
 
     constructor(id: String?, email: String?, submit: Int?, solved: Int?, is_disabled: String?, ip: String?, accesstime: Timestamp?, volume: Int?, language: Int?, password: String?, create_time: Timestamp?, username: String?, school: String?) {
-        val random = MTRandom(System.currentTimeMillis())
         this.id = id
 //        this.id = abs(random.nextInt())
         this.email = email

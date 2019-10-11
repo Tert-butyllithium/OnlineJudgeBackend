@@ -13,11 +13,11 @@ public class WebsiteController {
         return "{\n" +
                 "    \"error\": null,\n" +
                 "    \"data\": {\n" +
-                "        \"website_base_url\": \"https:/qduoj.com\",\n" +
+                "        \"website_base_url\": \"https:/lanran.club\",\n" +
                 "        \"website_name\": \"LanranForces Online Judge\",\n" +
-                "        \"website_name_shortcut\": \"LanranForces\",\n" +
-                "        \"website_footer\": \"<a href=\\\"https:/acm.sustech.edu.cn\\\">The OJ to be fucked</a>\",\n" +
-                "        \"allow_register\": true,\n" +
+                "        \"website_name_shortcut\": \"Lanranforces\",\n" +
+                "        \"website_footer\": \"<a href=\\\"#\\\">粤ICP备19124180号-1</a>\",\n" +
+                "        \"allow_register\": false,\n" +
                 "        \"submission_list_show_all\": true\n" +
                 "    }\n" +
                 "}";
