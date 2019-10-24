@@ -1,6 +1,6 @@
 package edu.sustech.oj_server.entity
 
-import edu.sustech.oj_server.toolclass.Person
+import edu.sustech.oj_server.utilclass.Person
 import java.sql.Timestamp
 
 open class News {

@@ -11,3 +11,9 @@
 - [ ] Administrator
 - [ ] User Profile
 - [ ] Code plagiarism detection based on abstract syntax tree
+
+## User guide
+1. update your jdk to 11
+2. open `IDEA` and `File-> New -> New Project from Version Control -> Git`
+3. modify the file `src/main/resources` to set up your port (default 1235) and your database
+4. if you are lazy, you can build a `HUSTOJ` and get its database schema

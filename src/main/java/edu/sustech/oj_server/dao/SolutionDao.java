@@ -48,7 +48,7 @@ public interface SolutionDao {
     List<Solution> getSolutionsInContestBy(String user,Integer result,Integer problem_id,int contest_id,int limit,int offset);
 
     @Select("select solution_id, solution.problem_id, user_id, time, memory, in_date, result, language, ip, c.contest_id, valid, solution.num, code_length, judgetime, pass_rate, lint_error, judger " +
-            "from solution join contest_problem c on solution.problem_id = c.problem_id where solution.contest_id=#{contest_id} and result!=11 order by in_date")
+            "from solution join contest_problem c on solution.problem_id = c.problem_id where solution.contest_id=#{contest_id} and result!=11 order by solution_id")
     List<Solution> listSolutionsInContest(int contest_id);
 
     @Select({"<script>",
