@@ -166,12 +166,18 @@ public class CachedRank {
 
     @Cacheable("rank")
     public List<Solve> getRank(int contest_id){
-        System.out.println("call");
+//        System.out.println("call");
         List<Solution> list=solutionDao.listSolutionsInContest(contest_id);
+        final Set<Integer> contest_problem=new HashSet<>(contestDao.getProblemsID(contest_id));
         Map<String, Solve> userSubmissions=new HashMap<>();
         Set<String> solved=new HashSet<>();
         long start=contestDao.getContest(contest_id).getStart_time().getTime();
         for(var s:list){
+//            if(s.getProblem())
+            Integer problemid=Integer.parseInt(s.getProblem());
+            if(!contest_problem.contains(problemid)){
+                continue;
+            }
             userSubmissions.putIfAbsent(s.getUser_id(),new Solve());
             var mysolves=userSubmissions.get(s.getUsername());
             var sa=mysolves.submission_info;
@@ -187,6 +193,7 @@ public class CachedRank {
                     saa.is_first_ac=true;
                 }
                 mysolves.total_time+=saa.ac_time;
+//                userSubmissions.replace(s.getUsername(),mysolves);
             }
             else{
                 saa.error_number++;

@@ -57,7 +57,7 @@ public class ProblemController {
             var res= problemDao.getProblem(id);
             User user= Authentication.getUser(request);
             if(user!=null&&user.getId()!=null){
-                if(problemDao.ACinProblems(user.getId(),res.getId())>0)
+                if(problemDao.ACinProblems(user.getId(),res.getId()).compareTo(0)>0)
                     res.setMy_status(0);
                 else if(problemDao.Was(user.getId(),res.getId(),null,null)>0){
                     res.setMy_status(-2);
