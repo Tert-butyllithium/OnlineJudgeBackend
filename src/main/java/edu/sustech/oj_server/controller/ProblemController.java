@@ -25,6 +25,7 @@ public class ProblemController {
                                          @RequestParam(value ="limit",required = false) Integer limit,
                                          @RequestParam(value = "paging",required = false) Boolean paging,
                                          @RequestParam(value = "page",required = false) Integer page,
+                                         @RequestParam(value = "keyword",required = false) String keyword,
                                          @RequestParam(value = "problem_id",defaultValue = "0") int id, HttpServletRequest request){
         if(id==0){
             if(limit == null){
@@ -34,12 +35,12 @@ public class ProblemController {
             List<Problem> res = null;
             int num=0;
             if(Authentication.isAdministrator(user)){
-                res=problemDao.listAllProblemsForAdmin(offset,limit);
-                num=problemDao.getNumForAdmin();
+                res=problemDao.listAllProblemsForAdmin(keyword,offset,limit);
+                num=problemDao.getNumForAdmin(keyword);
             }
             else {
-                res = problemDao.listAllProblems(offset, limit);
-                num=problemDao.getNum();
+                res = problemDao.listAllProblems(keyword,offset, limit);
+                num=problemDao.getNum(keyword);
             }
             for(var r:res){
                 if(user!=null){
