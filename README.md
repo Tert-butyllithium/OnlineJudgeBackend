@@ -8,12 +8,14 @@
 ## Progress
 
 - [x] Problem, Contest, Submit, Rank 
+- [x] Support Kotlin and Python 
 - [ ] Administrator
 - [ ] User Profile
-- [ ] Code plagiarism detection based on abstract syntax tree
+- [ ] ~~Code plagiarism detection based on abstract syntax tree~~ 
 
 ## User guide
 1. update your jdk to 11
 2. open `IDEA` and `File-> New -> New Project from Version Control -> Git`
-3. modify the file `src/main/resources` to set up your port (default 1235) and your database
-4. if you are lazy, you can build a `HUSTOJ` and get its database schema
+3. modify the file `src/main/resources/application.properties` to set up your port (default 1235) and your database
+4. if you are lazy, you can deploy a [HUSTOJ](https://github.com/zhblue/hustoj) and get its database schema
+5. judge server: https://github.com/Isaac-Graham/CS309_OOAD_online_judge

@@ -1,8 +1,8 @@
 package edu.sustech.oj_server.entity
 
-import edu.sustech.oj_server.utilclass.IOMode
-import edu.sustech.oj_server.utilclass.Person
-import edu.sustech.oj_server.utilclass.Sample
+import edu.sustech.oj_server.toolclass.IOMode
+import edu.sustech.oj_server.toolclass.Person
+import edu.sustech.oj_server.toolclass.Sample
 import java.sql.Timestamp
 
 open class Problem {
@@ -71,7 +71,7 @@ open class Problem {
         this.tags = listOf("unknown")
         this.created_by = Person("root", null)
         this.last_update_time = inDate
-        this.languages= listOf("C","C++","Java")
+        this.languages= listOf("C","C++","Java","Python3","Kotlin")
         this.template=CodeTemplate()
 //        println(this.time_limit)
     }

@@ -57,12 +57,13 @@ public class HUSTToQDU {
 
     public static Integer translateLanguage(String lan){
         if(lan==null) return null;
-        for(int i=0;i<lans.size();i++){
-            if(lans.get(i).equals(lan)){
-                return i;
-            }
-        }
-        return -1;
+//        for(int i=0;i<lans.size();i++){
+//            if(lans.get(i).equals(lan)){
+//                return i;
+//            }
+//        }
+//        return -1;
+        return lans.indexOf(lan);
     }
 
 }

@@ -1,12 +1,13 @@
 package edu.sustech.oj_server.controller;
 
-import edu.sustech.oj_server.dao.SourceCodeDao;
-import edu.sustech.oj_server.entity.SourceCode;
+import edu.sustech.oj_server.dao.*;
+import edu.sustech.oj_server.entity.Balloon;
+import edu.sustech.oj_server.entity.Solution;
 import edu.sustech.oj_server.entity.User;
 import edu.sustech.oj_server.util.Authentication;
 import edu.sustech.oj_server.util.ReturnType;
 import edu.sustech.oj_server.util.RuntimeInfo;
-import edu.sustech.oj_server.utilclass.ErrorStatistic;
+import edu.sustech.oj_server.toolclass.ErrorStatistic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -19,6 +20,13 @@ public class SourceCodeController {
 
     @Autowired
     SourceCodeDao sourceCodeDao;
+    @Autowired
+    BalloonDao balloonDao;
+    @Autowired
+    SolutionDao solutionDao;
+    @Autowired
+    ProblemDao problemDao;
+
 
     @RequestMapping("/api/submission")
     public ReturnType getSourceCode(@RequestParam("id") Integer id, HttpServletRequest request){
@@ -35,9 +43,20 @@ public class SourceCodeController {
                 ((ErrorStatistic) info).setErr_info(RuntimeInfo.getInfo(res.getId()));
                 res.setStatistic_info(info);
             }
+            Integer cid=solutionDao.getContestId(id);
+            if(res.getResult()==0&&cid!=null){
+                balloonDao.insert(res.getUser_id(),res.getId(),cid,problemDao.getNumInContest(cid,res.getProblem()));
+            }
             return new ReturnType<>(res);
         }
         return new ReturnType<>("error","You don't have permission to view this code");
+    }
 
+    public ReturnType getHistoricSubmission(@RequestParam("id") Integer id, HttpServletRequest request){
+        User user=Authentication.getUser(request);
+        if(user==null){
+            return new ReturnType(null);
+        }
+        return getSourceCode(id,request);
     }
 }
