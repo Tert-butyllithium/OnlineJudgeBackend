@@ -16,7 +16,4 @@ public interface SourceCodeDao {
 
     @Insert("insert into source_code (solution_id, source) values (#{solution_id},#{source})")
     Integer submit(Integer solution_id,String source);
-
-    @Insert("insert into source_code_user (solution_id, source) values (#{solution_id},#{source})")
-    Integer submit2(Integer solution_id,String source);
 }

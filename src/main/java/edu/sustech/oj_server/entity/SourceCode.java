@@ -2,8 +2,8 @@ package edu.sustech.oj_server.entity;
 
 import edu.sustech.oj_server.util.HUSTToQDU;
 import edu.sustech.oj_server.util.RuntimeInfo;
-import edu.sustech.oj_server.utilclass.ErrorStatistic;
-import edu.sustech.oj_server.utilclass.SuccessStatistic;
+import edu.sustech.oj_server.toolclass.ErrorStatistic;
+import edu.sustech.oj_server.toolclass.SuccessStatistic;
 
 import java.sql.Timestamp;
 

@@ -17,14 +17,11 @@ public class AnnouncementController {
 
     @Autowired
     private NewsDao newsDao;
-    private static final News disclaimer=new News(0,"root","Lanranforces复制了SUSTech OJ的数据库，但是二者并不互通",
-            "测试版本，不做任何保证",Timestamp.valueOf("2019-10-11 14:29:14.950009"),0,"N");
+
     @GetMapping("/api/announcement")
     public ReturnType<ReturnListType<News>> getAnnouncement(){
-        ArrayList<News> list=new ArrayList<>();
-        list.add(disclaimer);
         List<News> tmp=newsDao.listAllVisibleNews();
-        list.addAll(tmp);
+        ArrayList<News> list = new ArrayList<>(tmp);
         return new ReturnType<>(new ReturnListType<>(list, list.size()));
     }
 }

@@ -1,4 +1,4 @@
-package edu.sustech.oj_server.utilclass;
+package edu.sustech.oj_server.toolclass;
 
 public class ErrorStatistic {
     final int score=0;

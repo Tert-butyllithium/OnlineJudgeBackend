@@ -1,6 +1,6 @@
 package edu.sustech.oj_server.dao;
 
-import edu.sustech.oj_server.utilclass.DashBoard;
+import edu.sustech.oj_server.toolclass.DashBoard;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 

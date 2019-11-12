@@ -1,4 +1,4 @@
-package edu.sustech.oj_server.utilclass;
+package edu.sustech.oj_server.toolclass;
 
 import edu.sustech.oj_server.entity.User;
 import edu.sustech.oj_server.util.MTRandom;

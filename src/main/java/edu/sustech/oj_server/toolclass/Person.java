@@ -1,7 +1,4 @@
-package edu.sustech.oj_server.utilclass;
-
-import org.springframework.context.annotation.Bean;
-
+package edu.sustech.oj_server.toolclass;
 
 
 public class Person {

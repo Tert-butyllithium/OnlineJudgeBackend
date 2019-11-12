@@ -17,6 +17,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.sql.Struct;
@@ -35,6 +36,9 @@ public final class HUSTSubmit {
 
     @Value("${judge.server}")
     private String judge_server;
+
+    @Value("${judge.token}")
+    private String token;
 
     //    @Autowired
     private final CachedRank cachedRank;
@@ -114,17 +118,17 @@ public final class HUSTSubmit {
         }
     }
 
-    @GetMapping("/admin/submission/rejudge")
-    public ReturnType rejudge(@RequestParam Integer solutionId,HttpServletRequest request){
+    @GetMapping("/api/admin/submission/rejudge")
+    public ReturnType rejudge(@RequestParam Integer id,HttpServletRequest request){
         User user=Authentication.getUser(request);
         if(user==null){
-            return new ReturnType("error","Please login first");
+            return new ReturnType<>("error", "Please login first");
         }
-        if(Authentication.isAdministrator(user)){
-            return new ReturnType("error","You are not Administrator");
+        if(!Authentication.isAdministrator(user)){
+            return new ReturnType<>("error","You are not Administrator");
         }
-        submitJudger("http://"+judge_server, solutionId);
-        return new ReturnType(null);
+        submitJudger("http://"+judge_server, id);
+        return new ReturnType<>(null);
 
     }
 
@@ -149,11 +153,11 @@ public final class HUSTSubmit {
         } else {
             tmp.setNum(-1);
         }
-        System.out.println(solutionDao);
+//        System.out.println(solutionDao);
         solutionDao.submit(tmp);
         final Integer id = Integer.parseInt(tmp.getId());
         sourceCodeDao.submit(id, code.code);
-        sourceCodeDao.submit2(id, code.code);
+//        sourceCodeDao.submit2(id, code.code);
         solutionDao.update(id);
         if (code.contest_id != null) {
             cachedRank.refresh(code.contest_id);
@@ -166,6 +170,14 @@ public final class HUSTSubmit {
 //        }
 
         return new ReturnType<>(new submitId(id));
+    }
+
+    @PostMapping("/finishjudge")
+    public void finishJudge(Integer solution_id,String token){
+        if(!token.equals(this.token)){
+            return;
+        }
+        //TO-DO
     }
 
 
@@ -184,7 +196,6 @@ public final class HUSTSubmit {
 
         MultiValueMap<String, Object> requestBody = new LinkedMultiValueMap();
         requestBody.put("solutionId", Collections.singletonList((solutionId.intValue())));
-        System.out.println(requestBody);
         HttpEntity<MultiValueMap> requestEntity = new HttpEntity<>(requestBody, header);
 
         try {
@@ -199,5 +210,7 @@ public final class HUSTSubmit {
         }
         return false;
     }
+
+
 
 }

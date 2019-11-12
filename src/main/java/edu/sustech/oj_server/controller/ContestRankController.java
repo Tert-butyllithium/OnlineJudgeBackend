@@ -17,15 +17,15 @@ public class ContestRankController {
 
     @RequestMapping("api/contest_rank")
     public ReturnType<ReturnListType> getContestRank(@RequestParam("offset") int offset,
-                                                            @RequestParam("limit") int limit,
-                                                            @RequestParam("contest_id")int contest_id,
-                                                            @RequestParam("force_refresh") int force_refresh){
-        if(force_refresh==1){
+                                                     @RequestParam("limit") int limit,
+                                                     @RequestParam("contest_id") int contest_id,
+                                                     @RequestParam("force_refresh") int force_refresh) {
+        if (force_refresh == 1) {
             cachedRank.refresh(contest_id);
         }
-        var res=cachedRank.getRank(contest_id);
-        int end=Math.min(res.size(),offset+limit);
-        return new ReturnType<>(new ReturnListType<>(res.subList(offset,end),res.size()));
+        var res = cachedRank.getRank(contest_id);
+        int end = Math.min(res.size(), offset + limit);
+        return new ReturnType<>(new ReturnListType<>(res.subList(offset, end), res.size()));
     }
 
 

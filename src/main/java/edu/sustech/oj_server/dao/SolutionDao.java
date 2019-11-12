@@ -87,5 +87,6 @@ public interface SolutionDao {
     @Update("update solution set code_length = (select length(source) from source_code where source_code.solution_id=#{id}) where solution_id=#{id}")
     void update(Integer id);
 
-
+    @Select("select contest_id from solution where solution_id=#{solution_id}")
+    Integer getContestId(Integer solution_id);
 }

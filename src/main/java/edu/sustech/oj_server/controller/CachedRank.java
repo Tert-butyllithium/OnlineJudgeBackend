@@ -1,11 +1,11 @@
 package edu.sustech.oj_server.controller;
 
-import edu.sustech.oj_server.controller.ContestRankController;
 import edu.sustech.oj_server.dao.ContestDao;
 import edu.sustech.oj_server.dao.SolutionDao;
 import edu.sustech.oj_server.dao.UserDao;
 import edu.sustech.oj_server.entity.Solution;
 import edu.sustech.oj_server.entity.User;
+import edu.sustech.oj_server.toolclass.Status;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -22,52 +22,6 @@ public class CachedRank {
     @Autowired
     ContestDao contestDao;
 
-    class Status{
-        boolean is_ac;
-        double ac_time;
-        boolean is_first_ac;
-        int error_number;
-
-        Status() {
-            this.is_ac=false;
-            this.ac_time=0;
-            this.is_first_ac=false;
-            this.error_number=0;
-        }
-
-        public boolean isIs_ac() {
-            return is_ac;
-        }
-
-        public double getAc_time() {
-            return ac_time;
-        }
-
-        public boolean isIs_first_ac() {
-            return is_first_ac;
-        }
-
-        public int getError_number() {
-            return error_number;
-        }
-
-        public void setIs_ac(boolean is_ac) {
-            this.is_ac = is_ac;
-        }
-
-        public void setAc_time(double ac_time) {
-            this.ac_time = ac_time;
-        }
-
-        public void setIs_first_ac(boolean is_first_ac) {
-            this.is_first_ac = is_first_ac;
-        }
-
-        public void setError_number(int error_number) {
-            this.error_number = error_number;
-        }
-    }
-
     class Solve implements Comparable<Solve>{
         int id;
         User user;
@@ -76,7 +30,7 @@ public class CachedRank {
         int accepted_number;
         int contest_id;
         double total_time;
-        Map<String,Status> submission_info;
+        Map<String, Status> submission_info;
 
         Solve() {
             submission_info=new HashMap<>();
