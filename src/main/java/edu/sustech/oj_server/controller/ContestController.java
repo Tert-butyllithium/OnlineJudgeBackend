@@ -27,7 +27,8 @@ public class ContestController {
 
     @RequestMapping("/api/contests")
     public ReturnType<ReturnListType<Contest>> list_contest(@RequestParam("limit") int limit, @RequestParam("offset") int offset){
-        return new ReturnType<>(new ReturnListType<Contest>(contestDao.listAllContest(offset,limit),contestDao.getNum()));
+        var res=contestDao.listAllVisibleContest(offset,limit);
+        return new ReturnType<>(new ReturnListType<Contest>(res,contestDao.getNum()));
     }
 
     @RequestMapping("/api/contest/problem")
