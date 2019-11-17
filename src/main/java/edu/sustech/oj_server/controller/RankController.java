@@ -56,7 +56,8 @@ public class RankController {
      private UserDao userDao;
 
     @GetMapping("/api/user_rank")
-    public ReturnType getRank(@RequestParam("offset") Integer offset,@RequestParam("limit") Integer limit){
+    public ReturnType getRank(@RequestParam(value = "offset",defaultValue = "0") Integer offset,
+                              @RequestParam("limit") Integer limit){
         var list=userDao.getRank(offset,limit);
         List<UserInRank> arrayList=new ArrayList<>();
 //        System.out.println(arrayList);

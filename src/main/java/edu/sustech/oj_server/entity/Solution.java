@@ -23,6 +23,7 @@ public class Solution {
 
     private Integer contestId;
     private Integer num;
+    private User user;
 
 
     private Object statistic_info;
@@ -119,7 +120,11 @@ public class Solution {
         this.statistic_info = var1;
     }
 
-    public Solution( Integer id,  Integer problem,  String user_id,  Integer time,  Integer memory,  Timestamp inDate, int result, Integer language,  String ip,  Integer contestId,  Byte valid,  Integer num,  Integer codeLength,  Timestamp judgetime,  BigDecimal passRate,  Integer lintError,  String judger) {
+    public User getUser() {
+        return user;
+    }
+
+    public Solution(Integer id, Integer problem, String user_id, Integer time, Integer memory, Timestamp inDate, int result, Integer language, String ip, Integer contestId, Byte valid, Integer num, Integer codeLength, Timestamp judgetime, BigDecimal passRate, Integer lintError, String judger) {
         this.id = id;
         this.problem = problem.toString();
         this.user_id = user_id;
@@ -136,8 +141,14 @@ public class Solution {
             this.statistic_info=new ErrorStatistic("sorry, not available");
         }
     }
-    //insert into solution (problem_id,user_id, in_date, language, ip, contest_id)
-    //values (1001,'11712510',now(),0,'172.18.1.122',null);
+
+    public Solution( Integer id,  Integer problem,  String user_id,String nick, Integer time,  Integer memory,  Timestamp inDate,
+                     int result, Integer language,  String ip,  Integer contestId,  Byte valid,  Integer num,
+                     Integer codeLength,  Timestamp judgetime,  BigDecimal passRate,  Integer lintError,  String judger) {
+        this(id,problem,user_id,time,memory,inDate,result,language,ip,contestId,valid,num,codeLength,judgetime,passRate,lintError,judger);
+        this.user=new User(user_id,null,0,0,null,null,null,null,null,null,null,nick,null);
+    }
+
     public Solution(Integer problem,String username,String language,Integer contestId){
         this(null,problem,username,null,null,new Timestamp(System.currentTimeMillis()),1,null,"172.18.1.122",contestId,null,null,null,null,null,null,null);
         this.language=String.valueOf(HUSTToQDU.translateLanguage(language));
