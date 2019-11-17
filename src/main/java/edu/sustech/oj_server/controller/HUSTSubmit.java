@@ -153,21 +153,16 @@ public final class HUSTSubmit {
         } else {
             tmp.setNum(-1);
         }
-//        System.out.println(solutionDao);
+
         solutionDao.submit(tmp);
         final Integer id = Integer.parseInt(tmp.getId());
         sourceCodeDao.submit(id, code.code);
-//        sourceCodeDao.submit2(id, code.code);
         solutionDao.update(id);
         if (code.contest_id != null) {
             cachedRank.refresh(code.contest_id);
         }
 
-        // Ask judge_server to judge.
         boolean judging = submitJudger("http://"+judge_server, id);
-//        if (!judging) {
-//            throw new RuntimeException("The judge sevice has not been started yep. Please start the service before transferring the solution id.");
-//        }
 
         return new ReturnType<>(new submitId(id));
     }

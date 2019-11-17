@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 
-public class Solve implements Comparable<Solve>,Cloneable{
+public class Solve implements Comparable<Solve>{
 
     int id;
     User user;
@@ -23,19 +23,9 @@ public class Solve implements Comparable<Solve>,Cloneable{
 
     int contest_id;
 
-    String rank;
+    int rank;
 
     double total_time;
-
-    double penalty;
-
-    public double getPenalty() {
-        return penalty;
-    }
-
-    public void setPenalty(double penalty) {
-        this.penalty = penalty;
-    }
 
     Map<String, Status> submission_info;
 
@@ -109,11 +99,11 @@ public class Solve implements Comparable<Solve>,Cloneable{
         return contest;
     }
 
-    public String getRank() {
+    public int getRank() {
         return rank;
     }
 
-    public void setRank(String rank) {
+    public void setRank(int rank) {
         this.rank = rank;
     }
 
@@ -122,26 +112,29 @@ public class Solve implements Comparable<Solve>,Cloneable{
     }
 
     public double getTotal_time() {
-        return this.total_time;
+        return total_time;
     }
 
+    public double penalty(){
+        return this.total_time+20*(this.submission_number-this.accepted_number);
+    }
 
     public int compareTo(Solve solve) {
         if(accepted_number==solve.accepted_number){
-            return Double.compare(this.penalty,solve.penalty);
+            return Double.compare(this.penalty(),solve.penalty());
         }
         return Integer.compare(solve.accepted_number,this.accepted_number);
     }
 
     @Override
     public String toString() {
-        StringBuilder res = new StringBuilder(this.rank+"," + this.user.getId()+","+this.accepted_number + "," + ((long)this.penalty)/60);
+        StringBuilder res = new StringBuilder(this.rank+"," + this.user.getId()+","+this.accepted_number + "," + ((long)this.total_time)/60);
 
-        for(char i='A';i<'A'+this.problemConvert.size();i++){
+        for(char i='A';i<'A'+this.submission_info.size();i++){
             res.append(", ");
             var x=problemConvert.get(i);
             if(this.submission_info.containsKey(x)&&this.submission_info.get(x).is_ac) {
-                long seconds = (long) this.submission_info.get(x).ac_time;
+                var seconds = this.submission_info.get(x).ac_time.longValue();
                 res.append( seconds / 60);
             }
             if(this.submission_info.containsKey(x)&&this.submission_info.get(x).error_number>0){
@@ -149,10 +142,5 @@ public class Solve implements Comparable<Solve>,Cloneable{
             }
         }
         return res.toString();
-    }
-
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-        return super.clone();
     }
 }

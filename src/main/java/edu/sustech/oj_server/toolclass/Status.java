@@ -5,14 +5,14 @@ package edu.sustech.oj_server.toolclass;
  * used in RankList and Balloon
  */
 public class Status{
-    public boolean is_ac;
-    public double ac_time;
-    public boolean is_first_ac;
-    public int error_number;
+    public Boolean is_ac;
+    public Double ac_time;
+    public Boolean is_first_ac;
+    public Integer error_number;
 
     public Status() {
         this.is_ac=false;
-        this.ac_time=0;
+        this.ac_time=0.00;
         this.is_first_ac=false;
         this.error_number=0;
     }
