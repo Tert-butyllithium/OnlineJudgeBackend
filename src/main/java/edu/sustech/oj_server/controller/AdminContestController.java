@@ -6,13 +6,12 @@ import edu.sustech.oj_server.dao.ProblemDao;
 import edu.sustech.oj_server.entity.Contest;
 import edu.sustech.oj_server.entity.Problem;
 import edu.sustech.oj_server.entity.User;
+import edu.sustech.oj_server.toolclass.ProblemInContest;
 import edu.sustech.oj_server.util.Authentication;
 import edu.sustech.oj_server.util.ReturnListType;
 import edu.sustech.oj_server.util.ReturnType;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -38,8 +37,13 @@ public class AdminContestController {
     }
 
     @PostMapping("")
-    public ReturnType createContest(@RequestBody Contest contest) {
+    public ReturnType createContest(@RequestBody Contest contest, HttpServletRequest request) {
 //        System.out.println(contest);
+        User user = Authentication.getUser(request);
+        boolean admin = Authentication.isAdministrator(user);
+        if (user == null || !admin) {
+            return new ReturnType("login-required", "Please login in first");
+        }
         try {
             contestDao.insert(contest.getTitle(), contest.getDescription(), contest.getStart_time(), contest.getEnd_time(),
                     contest.getPassword(), contest.getFrozen_time(), contest.getVisible() ? 0 : 1);
@@ -55,7 +59,13 @@ public class AdminContestController {
     @GetMapping("")
     public ReturnType getContests(@RequestParam(value = "id", required = false) Integer id,
                                   @RequestParam(value = "limit", required = false) Integer limit,
-                                  @RequestParam(value = "offset", required = false) Integer offset) {
+                                  @RequestParam(value = "offset", required = false) Integer offset,
+                                  HttpServletRequest request) {
+        User user = Authentication.getUser(request);
+        boolean admin = Authentication.isAdministrator(user);
+        if (user == null || !admin) {
+            return new ReturnType("login-required", "Please login in first");
+        }
         if (id == null) {
             var res = contestDao.listAllContest(offset, limit);
             return new ReturnType<>(new ReturnListType<Contest>(res, contestDao.getNum()));
@@ -66,7 +76,13 @@ public class AdminContestController {
 
     @GetMapping("/problem")
     public ReturnType getProblemsInContest(@RequestParam("limit") int limit, @RequestParam("offset") int offset,
-                                           @RequestParam("contest_id") int contest_id) {
+                                           @RequestParam("contest_id") int contest_id,
+                                           HttpServletRequest request) {
+        User user = Authentication.getUser(request);
+        boolean admin = Authentication.isAdministrator(user);
+        if (user == null || !admin) {
+            return new ReturnType("login-required", "Please login in first");
+        }
         var res = contestDao.getProblemsID(contest_id);
         int len = res.size();
         res = res.subList(Math.max(0,offset), Math.max(0,Math.min(len, offset + limit)));
@@ -78,6 +94,18 @@ public class AdminContestController {
             list.get(i).set_id(String.valueOf((char)('A'+i+offset)));
         }
         return new ReturnType<>(new ReturnListType(list, len));
+    }
+
+
+    @PostMapping("/add_problem_from_public")
+    public ReturnType addProblemFromPublic(@RequestBody ProblemInContest problemInContest, HttpServletRequest request){
+        User user = Authentication.getUser(request);
+        boolean admin = Authentication.isAdministrator(user);
+        if (user == null || !admin) {
+            return new ReturnType("login-required", "Please login in first");
+        }
+        contestDao.insertProblemInContest(problemInContest.problem_id,problemInContest.contest_id);
+        return new ReturnType(null);
     }
 
     @DeleteMapping("/problem")

@@ -127,6 +127,7 @@ public final class HUSTSubmit {
         if(!Authentication.isAdministrator(user)){
             return new ReturnType<>("error","You are not Administrator");
         }
+        solutionDao.rejugde(id);
         submitJudger("http://"+judge_server, id);
         return new ReturnType<>(null);
 
@@ -157,6 +158,7 @@ public final class HUSTSubmit {
         solutionDao.submit(tmp);
         final Integer id = Integer.parseInt(tmp.getId());
         sourceCodeDao.submit(id, code.code);
+        // should be optimized!
         solutionDao.update(id);
         if (code.contest_id != null) {
             cachedRank.refresh(code.contest_id);
