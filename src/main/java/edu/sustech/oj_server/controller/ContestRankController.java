@@ -1,6 +1,8 @@
 package edu.sustech.oj_server.controller;
 
 import edu.sustech.oj_server.dao.ContestDao;
+import edu.sustech.oj_server.entity.User;
+import edu.sustech.oj_server.util.Authentication;
 import edu.sustech.oj_server.util.ReturnListType;
 import edu.sustech.oj_server.util.ReturnType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -33,14 +36,20 @@ public class ContestRankController {
 
     @RequestMapping("api/contest_rank")
     public Object getContestRank(@RequestParam(value = "offset",defaultValue = "0") Integer offset,
-                                                     @RequestParam(value = "limit",required = false) Integer limit,
-                                                     @RequestParam("contest_id") Integer contest_id,
-                                                     @RequestParam(value = "force_refresh",required = false) Integer force_refresh,
-                                                     @RequestParam(value = "download_csv",required = false) Integer download_csv) {
+                                 @RequestParam(value = "limit",required = false) Integer limit,
+                                 @RequestParam("contest_id") Integer contest_id,
+                                 @RequestParam(value = "force_refresh",required = false) Integer force_refresh,
+                                 @RequestParam(value = "download_csv",required = false) Integer download_csv,
+                                 HttpServletRequest request) {
         if(download_csv!=null&&download_csv!=0){
             try {
+                User user = Authentication.getUser(request);
+                boolean admin = Authentication.isAdministrator(user);
+                if (user == null || !admin) {
+                    return new ReturnType("error", "you are not administrator");
+                }
                 CachedRank.writeCSV(Integer.toString(contest_id),cachedRank.getRank(contest_id));
-                File file = new File("cachedrank"+contest_id+".csv");
+                File file = new File("cachedrank/"+contest_id+".csv");
                 Path path = Paths.get(file.getAbsolutePath());
                 ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(path));
 
@@ -53,6 +62,7 @@ public class ContestRankController {
                         .contentType(MediaType.parseMediaType("application/octet-stream"))
                         .body(resource);
             }catch (Exception e){
+                e.printStackTrace();
                 return new ReturnType<>("error",e.getMessage());
             }
         }
