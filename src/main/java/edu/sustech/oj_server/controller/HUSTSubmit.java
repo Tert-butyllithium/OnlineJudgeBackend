@@ -160,9 +160,9 @@ public final class HUSTSubmit {
         sourceCodeDao.submit(id, code.code);
         // should be optimized!
         solutionDao.update(id);
-        if (code.contest_id != null) {
-            cachedRank.refresh(code.contest_id);
-        }
+//        if (code.contest_id != null) {
+//            cachedRank.refresh(code.contest_id);
+//        }
 
         boolean judging = submitJudger("http://"+judge_server, id);
 
@@ -174,7 +174,10 @@ public final class HUSTSubmit {
         if(!token.equals(this.token)){
             return;
         }
-        //TO-DO
+        System.out.println("Message from the judge server");
+        Solution solution=solutionDao.getSolution(solution_id);
+        if(solution.getContestId()!=null)
+            cachedRank.refresh(solution.getContestId());
     }
 
 
