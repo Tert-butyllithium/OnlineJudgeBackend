@@ -2,10 +2,7 @@ package edu.sustech.oj_server.controller;
 
 import edu.sustech.oj_server.dao.ContestDao;
 import edu.sustech.oj_server.dao.SolutionDao;
-import edu.sustech.oj_server.dao.UserDao;
-import edu.sustech.oj_server.entity.Problem;
 import edu.sustech.oj_server.entity.Solution;
-import edu.sustech.oj_server.entity.User;
 import edu.sustech.oj_server.toolclass.Solve;
 import edu.sustech.oj_server.toolclass.Status;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,11 +17,15 @@ import java.util.*;
 @Service
 public class CachedRank {
     @Autowired
-    UserDao userDao;
-    @Autowired
     SolutionDao solutionDao;
     @Autowired
     ContestDao contestDao;
+
+    private final CachedUser cachedUser;
+
+    public CachedRank(CachedUser cachedUser) {
+        this.cachedUser = cachedUser;
+    }
 
 
     @Cacheable("rank")
@@ -71,7 +72,7 @@ public class CachedRank {
         for(var p:userSubmissions.entrySet()){
             p.getValue().setId(id++);
             p.getValue().setContest(contest_id);
-            p.getValue().setUser(userDao.getUser(p.getKey()));
+            p.getValue().setUser(cachedUser.getUser(p.getKey()));
 
             p.getValue().getSubmission_info().values().stream().
                     filter(Status::isIs_ac).map(t->t.error_number+1).
@@ -93,8 +94,6 @@ public class CachedRank {
            res.get(i).setProblemConvert(problemConverter);
         }
         System.out.println("Step 3 cost: "+(System.currentTimeMillis()-method_start_time));
-//        method_start_time = System.currentTimeMillis();
-
         return res;
     }
 

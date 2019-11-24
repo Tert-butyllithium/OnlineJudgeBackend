@@ -58,7 +58,7 @@ public interface SolutionDao {
             "       result,\n" +
             "       solution.language,\n" +
             "       solution.ip,\n" +
-            "       c.contest_id,\n" +
+            "       contest_id,\n" +
             "       valid,\n" +
             "       solution.num,\n" +
             "       code_length,\n" +
@@ -67,8 +67,6 @@ public interface SolutionDao {
             "       lint_error,\n" +
             "       judger\n" +
             "       from solution\n" +
-            "       join contest_problem c on solution.problem_id = c.problem_id\n" +
-//            "       join users u on solution.user_id = u.user_id\n" +
             "where solution.contest_id =#{contest_id} and result!=11 order by solution_id")
     List<Solution> listSolutionsInContest(int contest_id);
 

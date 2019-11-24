@@ -20,7 +20,7 @@ public class CachedUser {
     }
 
     @CacheEvict("user")
-    public void clear(){
+    public void clear(String id){
         System.out.println("cleared");
     }
 }
