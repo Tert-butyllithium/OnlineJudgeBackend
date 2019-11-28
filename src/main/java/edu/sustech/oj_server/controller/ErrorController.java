@@ -9,13 +9,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class ErrorController {
     @PostMapping("/error")
     public ReturnType getError(@RequestBody Object o){
-        System.out.println(o);
+//        System.out.println(o);
         return new ReturnType(null);
     }
 
     @PostMapping("/api/judge_server_heartbeat/")
     public ReturnType postHeartBeat(@RequestBody Object o){
-        System.out.println(o);
+//        System.out.println(o);
         return new ReturnType(null);
     }
 }

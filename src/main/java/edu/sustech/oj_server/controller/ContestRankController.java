@@ -1,6 +1,7 @@
 package edu.sustech.oj_server.controller;
 
 import edu.sustech.oj_server.dao.ContestDao;
+import edu.sustech.oj_server.entity.Contest;
 import edu.sustech.oj_server.entity.User;
 import edu.sustech.oj_server.util.Authentication;
 import edu.sustech.oj_server.util.ReturnListType;
@@ -10,6 +11,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,6 +23,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Objects;
 
 @RestController
 public class ContestRankController {
@@ -48,7 +52,7 @@ public class ContestRankController {
                 if (user == null || !admin) {
                     return new ReturnType("error", "you are not administrator");
                 }
-                CachedRank.writeCSV(Integer.toString(contest_id),cachedRank.getRank(contest_id));
+                CachedRank.writeCSV(Integer.toString(contest_id),cachedRank.getRank(contest_id,0));
                 File file = new File("cachedrank/"+contest_id+".csv");
                 Path path = Paths.get(file.getAbsolutePath());
                 ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(path));
@@ -66,12 +70,46 @@ public class ContestRankController {
                 return new ReturnType<>("error",e.getMessage());
             }
         }
-        if (force_refresh !=null && force_refresh !=0) {
-            cachedRank.refresh(contest_id);
+        Integer frozen=contestDao.getFrozen(contest_id);
+        if(frozen==null){
+            frozen=0;
         }
-        var res = cachedRank.getRank(contest_id);
+//        if (force_refresh !=null && force_refresh !=0) {
+//            cachedRank.refresh(contest_id,frozen);
+//            if(frozen!=0){
+//                cachedRank.refresh(contest_id,0);
+//            }
+//        }
+//        Contest contest=contestDao.getContest(contest_id);
+
+        User user = Authentication.getUser(request);
+        if(Authentication.isAdministrator(user)){
+            frozen=0;
+        }
+        var res = cachedRank.getRank(contest_id,frozen);
         int end = Math.min(res.size(), offset + limit);
         return new ReturnType<>(new ReturnListType<>(res.subList(offset, end), res.size()));
+    }
+
+    @GetMapping("api/contest_rank/myrank")
+    public ReturnType<ReturnListType> getMyRank(@RequestParam("id") Integer id,HttpServletRequest request){
+        Integer frozen=contestDao.getFrozen(id);
+        if(frozen==null){
+            frozen=0;
+        }
+        User user = Authentication.getUser(request);
+        if(user==null){
+            return new ReturnType<>(new ReturnListType(new ArrayList(),0));
+        }
+        var ranklist=cachedRank.getRank(id,frozen);
+        ArrayList res=new ArrayList();
+        for(var c:ranklist){
+            if(Objects.equals(c.getUser().getId(), user.getId())){
+                res.add(c);
+                return new ReturnType<>(new ReturnListType(res,1));
+            }
+        }
+        return new ReturnType<>(new ReturnListType(new ArrayList(),0));
     }
 
 

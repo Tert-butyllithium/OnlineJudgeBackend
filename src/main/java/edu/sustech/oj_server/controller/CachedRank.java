@@ -11,6 +11,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
+import java.sql.Timestamp;
 import java.util.*;
 
 
@@ -29,19 +30,24 @@ public class CachedRank {
 
 
     @Cacheable("rank")
-    public List<Solve> getRank(int contest_id){
+    public List<Solve> getRank(int contest_id,int frozen){
         var method_start_time = System.currentTimeMillis();
         List<Solution> list=solutionDao.listSolutionsInContest(contest_id);
         final Set<Integer> contest_problem=new HashSet<>(contestDao.getProblemsID(contest_id));
         Map<String, Solve> userSubmissions=new HashMap<>();
         Set<String> solved=new HashSet<>();
         long start=contestDao.getContest(contest_id).getStart_time().getTime();
+        long end=contestDao.getContest(contest_id).getEnd_time().getTime()-frozen*60*1000;
         System.out.println("Query Database: "+(System.currentTimeMillis()-method_start_time));
         method_start_time = System.currentTimeMillis();
+        final var frozentime=new Timestamp(end);
         for(var s:list){
 //            if(s.getProblem())
             Integer problemid=Integer.parseInt(s.getProblem());
             if(!contest_problem.contains(problemid)){
+                continue;
+            }
+            if(s.getCreate_time().after(frozentime)){
                 continue;
             }
             userSubmissions.putIfAbsent(s.getUser_id(),new Solve());
@@ -119,7 +125,7 @@ public class CachedRank {
     }
 
     @CacheEvict("rank")
-    public void refresh(int contest_id){
+    public void refresh(int contest_id,int frozen){
         System.out.println("cleared");
     }
 }

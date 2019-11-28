@@ -1,6 +1,7 @@
 package edu.sustech.oj_server.dao;
 
 import edu.sustech.oj_server.entity.User;
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
@@ -20,4 +21,8 @@ public interface UserDao {
 
     @Select("select count(*) from users where submit>0")
     Integer getUserNumber();
+
+    @Insert("insert into users (user_id, email, submit, solved, defunct, ip, accesstime, volume, language, password, reg_time, nick, school)\n" +
+            "values (#{id},#{email},0,0,'N',default,default,default,default,#{password},now(),#{id},default)")
+    void insert(String id,String password,String email);
 }
