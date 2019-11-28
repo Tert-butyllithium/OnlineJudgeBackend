@@ -1,10 +1,8 @@
 package edu.sustech.oj_server.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import edu.sustech.oj_server.dao.LoginLogDao;
-import edu.sustech.oj_server.dao.ProblemDao;
-import edu.sustech.oj_server.dao.SolutionDao;
-import edu.sustech.oj_server.dao.SourceCodeDao;
+import edu.sustech.oj_server.dao.*;
+import edu.sustech.oj_server.entity.Contest;
 import edu.sustech.oj_server.entity.Solution;
 import edu.sustech.oj_server.entity.User;
 import edu.sustech.oj_server.util.Authentication;
@@ -21,7 +19,9 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.sql.Struct;
+import java.sql.Timestamp;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 
 @RestController
 public final class HUSTSubmit {
@@ -33,6 +33,10 @@ public final class HUSTSubmit {
     LoginLogDao loginLogDao;
     @Autowired
     ProblemDao problemDao;
+    @Autowired
+    ContestDao contestDao;
+
+    private static final int CODE_LENGTH_LIMIT = 56 * 1024;
 
     @Value("${judge.server}")
     private String judge_server;
@@ -119,16 +123,16 @@ public final class HUSTSubmit {
     }
 
     @GetMapping("/api/admin/submission/rejudge")
-    public ReturnType rejudge(@RequestParam Integer id,HttpServletRequest request){
-        User user=Authentication.getUser(request);
-        if(user==null){
+    public ReturnType rejudge(@RequestParam Integer id, HttpServletRequest request) {
+        User user = Authentication.getUser(request);
+        if (user == null) {
             return new ReturnType<>("error", "Please login first");
         }
-        if(!Authentication.isAdministrator(user)){
-            return new ReturnType<>("error","You are not Administrator");
+        if (!Authentication.isAdministrator(user)) {
+            return new ReturnType<>("error", "You are not Administrator");
         }
         solutionDao.rejugde(id);
-        submitJudger("http://"+judge_server, id);
+        submitJudger("http://" + judge_server, id);
         return new ReturnType<>(null);
 
     }
@@ -154,6 +158,17 @@ public final class HUSTSubmit {
         } else {
             tmp.setNum(-1);
         }
+        if (code.code.length() > CODE_LENGTH_LIMIT) {
+            return new ReturnType("error", "Code length limit exceed");
+        }
+        if(code.contest_id!=null){
+            Contest contest=contestDao.getContest(code.contest_id);
+            var now=new Timestamp(System.currentTimeMillis());
+            System.out.println(now);
+            if((!now.after(contest.getStart_time()))||(!now.before(contest.getEnd_time()))){
+                return new ReturnType("error", "error");
+            }
+        }
 
         solutionDao.submit(tmp);
         final Integer id = Integer.parseInt(tmp.getId());
@@ -164,25 +179,36 @@ public final class HUSTSubmit {
 //            cachedRank.refresh(code.contest_id);
 //        }
 
-        boolean judging = submitJudger("http://"+judge_server, id);
+        boolean judging = submitJudger("http://" + judge_server, id);
 
         return new ReturnType<>(new submitId(id));
     }
 
-    @PostMapping("/finishjudge")
-    public void finishJudge(Integer solution_id,String token){
-        if(!token.equals(this.token)){
-            return;
+    @PostMapping("/api/finishjudge")
+    public ReturnType finishJudge(@RequestBody LinkedHashMap request) {
+        Integer solution_id = (Integer) request.get("solution_id");
+        String token = (String) request.get("token");
+        if (!token.equals(this.token)) {
+            return new ReturnType("error", "error");
         }
         System.out.println("Message from the judge server");
-        Solution solution=solutionDao.getSolution(solution_id);
-        if(solution.getContestId()!=null)
-            cachedRank.refresh(solution.getContestId());
+        Solution solution = solutionDao.getSolution(solution_id);
+        Integer contest_id = solution.getContestId();
+        if (contest_id != null) {
+            Integer frozen = contestDao.getFrozen(contest_id);
+            if(frozen==null){
+                frozen=0;
+            }
+            if (frozen != 0)
+                cachedRank.refresh(contest_id, frozen);
+            cachedRank.refresh(contest_id, 0);
+        }
+        return new ReturnType(null);
     }
 
 
     /**
-     * @param url The restful API of judger
+     * @param url        The restful API of judger
      * @param solutionId The solution id which will be judged.
      * @return boolean value with true representing adding successfully while false representing fail
      * Note that this api is asked to run the Judger first.
@@ -210,7 +236,6 @@ public final class HUSTSubmit {
         }
         return false;
     }
-
 
 
 }

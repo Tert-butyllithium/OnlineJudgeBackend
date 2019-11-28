@@ -1,6 +1,7 @@
 package edu.sustech.oj_server.controller;
 
 import edu.sustech.oj_server.dao.BalloonDao;
+import edu.sustech.oj_server.dao.ContestDao;
 import edu.sustech.oj_server.dao.LoginLogDao;
 import edu.sustech.oj_server.dao.SolutionDao;
 import edu.sustech.oj_server.entity.*;
@@ -24,6 +25,8 @@ public class SolutionController {
     SolutionDao solutionDao;
     @Autowired
     LoginLogDao loginLogDao;
+    @Autowired
+    ContestDao contestDao;
 
     @RequestMapping("/api/submissions")
     public ReturnType<ReturnListType<Solution>> getSolutions( @RequestParam(value = "myself") Integer myself,
@@ -71,6 +74,10 @@ public class SolutionController {
             @RequestParam(value = "offset")Integer offset,
             HttpServletRequest request
     ){
+            Integer frozen=contestDao.getFrozen(contest_id);
+            if(frozen!=null&&frozen!=0){
+                myself=1;
+            }
             String myname=null;
             User user= Authentication.getUser(request);
             boolean isAdmin = Authentication.isAdministrator(user);

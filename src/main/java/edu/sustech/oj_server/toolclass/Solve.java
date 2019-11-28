@@ -116,7 +116,7 @@ public class Solve implements Comparable<Solve>{
     }
 
     public double penalty(){
-        return this.total_time+20*(this.submission_number-this.accepted_number);
+        return this.total_time+20*60*(this.submission_number-this.accepted_number);
     }
 
     public int compareTo(Solve solve) {
