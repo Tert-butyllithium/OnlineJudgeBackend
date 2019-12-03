@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -101,10 +102,14 @@ public class ContestRankController {
         if(user==null){
             return new ReturnType<>(new ReturnListType(new ArrayList(),0));
         }
-        var ranklist=cachedRank.getRank(id,frozen);
+        var ranklist=cachedRank.getRank(id,0);
         ArrayList res=new ArrayList();
         for(var c:ranklist){
             if(Objects.equals(c.getUser().getId(), user.getId())){
+                long end=contestDao.getContest(id).getEnd_time().getTime();
+                if(end-frozen*60*1000<System.currentTimeMillis()){
+                    c.setRank("?");
+                }
                 res.add(c);
                 return new ReturnType<>(new ReturnListType(res,1));
             }

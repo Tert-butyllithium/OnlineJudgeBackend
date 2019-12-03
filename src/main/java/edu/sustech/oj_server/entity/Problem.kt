@@ -15,7 +15,7 @@ open class Problem {
 //    var sampleInput: String? = null
 //    var sampleOutput: String? = null
     var _id:String? = null
-    var samples:List<Sample>?=null
+    var samples:ArrayList<Sample>?=null
     var spj: Boolean? = null
     var hint: String? = null
     var source: String? = null
@@ -48,7 +48,8 @@ open class Problem {
         this.output_description = output
 //        this.sampleInput = sampleInput
 //        this.sampleOutput = sampleOutput
-        this.samples= listOf(Sample(sampleInput, sampleOutput))
+        this.samples= ArrayList()
+        this.samples!!.add(Sample(sampleInput, sampleOutput))
 //        this.spj = spj
         if(spj == "Y"){
             this.spj = true

@@ -4,6 +4,7 @@ import edu.sustech.oj_server.dao.UserDao;
 import edu.sustech.oj_server.entity.User;
 import edu.sustech.oj_server.util.Authentication;
 import edu.sustech.oj_server.util.LoginUtil;
+import edu.sustech.oj_server.util.MailServer;
 import edu.sustech.oj_server.util.ReturnType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,6 +21,8 @@ public class AdminUserController {
 
     @Autowired
     private UserDao userDao;
+    @Autowired
+    private MailServer mailServer;
 
     @PostMapping("/api/admin/user")
     public ReturnType importUser(@RequestBody LinkedHashMap body, HttpServletRequest request){
@@ -39,8 +42,15 @@ public class AdminUserController {
         return new ReturnType(null);
     }
 
+    private String registerSubject="Password for Lanranforces (https://ac.lanran.club)";
+
+    private String endOfMail="Lanranforces";
+
     private void importUser(List<List> list){
         for(var l:list){
+            // to, subject, text
+            mailServer.sendEmail(l.get(2).toString(),registerSubject,"Dear "+l.get(0).toString()+",\n  Your Password is "+l.get(1)+". Please change your password in time after logging in with this password\n\n"+endOfMail);
+            // id, password,email
             userDao.insert(l.get(0).toString(), LoginUtil.passwordGen(l.get(1).toString()),l.get(2).toString());
         }
     }
