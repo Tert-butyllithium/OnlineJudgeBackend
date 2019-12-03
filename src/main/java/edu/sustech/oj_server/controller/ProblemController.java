@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 public class ProblemController {
@@ -56,6 +57,7 @@ public class ProblemController {
         }
         else{
             var res= problemDao.getProblem(id);
+            Objects.requireNonNull(res.getSamples()).addAll(problemDao.getExtraSamples(id));
             User user= Authentication.getUser(request);
             if(user!=null&&user.getId()!=null){
                 var tmp=problemDao.ACinProblems(user.getId(),res.getId());

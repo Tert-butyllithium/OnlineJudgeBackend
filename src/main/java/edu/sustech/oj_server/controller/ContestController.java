@@ -1,6 +1,7 @@
 package edu.sustech.oj_server.controller;
 
 import edu.sustech.oj_server.dao.ContestDao;
+import edu.sustech.oj_server.dao.PrivilegeDao;
 import edu.sustech.oj_server.dao.ProblemDao;
 import edu.sustech.oj_server.entity.Contest;
 import edu.sustech.oj_server.entity.Problem;
@@ -9,13 +10,10 @@ import edu.sustech.oj_server.util.Authentication;
 import edu.sustech.oj_server.util.ReturnListType;
 import edu.sustech.oj_server.util.ReturnType;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @RestController
 public class ContestController {
@@ -24,6 +22,8 @@ public class ContestController {
     ContestDao contestDao;
     @Autowired
     ProblemDao problemDao;
+    @Autowired
+    PrivilegeDao privilegeDao;
 
     @RequestMapping("/api/contests")
     public ReturnType<ReturnListType<Contest>> list_contest(@RequestParam("limit") int limit, @RequestParam("offset") int offset){
@@ -74,5 +74,41 @@ public class ContestController {
         return new ReturnType<>(contestDao.getContest(id));
     }
 
+    @GetMapping("/api/contest/access")
+    public ReturnType canAccess(@RequestParam("contest_id")int id,HttpServletRequest request){
+        User user=Authentication.getUser(request);
+        var res=new LinkedHashMap<>();
+        if (user != null && user.getId() != null) {
+            if(privilegeDao.getContestAccess(user.getId(),Integer.toString(id))>0){
+                res.put("access",true);
+            }
+            else{
+                res.put("access",false);
+            }
+        } else {
+            res.put("access",false);
+        }
+        return new ReturnType(res);
+    }
+
+    @PostMapping("/api/contest/password")
+    public ReturnType verifyPassword(@RequestBody LinkedHashMap map,HttpServletRequest request){
+        User user=Authentication.getUser(request);
+        if(user==null||user.getId()==null){
+            return new ReturnType("error","Please login first");
+        }
+        try {
+            Integer contest_id = Integer.parseInt(map.get("contest_id").toString());
+            String password = map.get("password").toString();
+            if(Objects.equals(password,privilegeDao.getContestAccess(user.getId(),Integer.toString(contest_id)))){
+                return new ReturnType(Map.of("access",true));
+            }
+            else{
+                return new ReturnType(Map.of("access",false));
+            }
+        }catch (Exception e){
+            return new ReturnType("error",e.getMessage());
+        }
+    }
 
 }

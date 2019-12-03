@@ -20,7 +20,7 @@ open class Contest() {
     var end_time: java.sql.Timestamp? = null
 
     var contest_type: String?
-        get() = if(defunct.equals("N")) "Public" else  "Password Protected"
+        get() = if(password.equals("")) "Public" else  "Password Protected"
         set(value) = if(value.equals("Public")) this.defunct="N" else this.defunct="Y"
 
     val rule_type  = "ACM"

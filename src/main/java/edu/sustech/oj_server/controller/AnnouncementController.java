@@ -6,6 +6,7 @@ import edu.sustech.oj_server.util.ReturnListType;
 import edu.sustech.oj_server.util.ReturnType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.sql.Timestamp;
@@ -19,9 +20,15 @@ public class AnnouncementController {
     private NewsDao newsDao;
 
     @GetMapping("/api/announcement")
-    public ReturnType<ReturnListType<News>> getAnnouncement(){
-        List<News> tmp=newsDao.listAllVisibleNews();
-        ArrayList<News> list = new ArrayList<>(tmp);
-        return new ReturnType<>(new ReturnListType<>(list, list.size()));
+    public ReturnType<ReturnListType<News>> getAnnouncement(@RequestParam(value = "contest_id",required = false) Integer contest_id){
+        if(contest_id==null) {
+            List<News> tmp = newsDao.listAllVisibleNews();
+            ArrayList<News> list = new ArrayList<>(tmp);
+            return new ReturnType<>(new ReturnListType<>(list, list.size()));
+        }
+        else{
+            return new ReturnType<>(null);
+        }
     }
+
 }

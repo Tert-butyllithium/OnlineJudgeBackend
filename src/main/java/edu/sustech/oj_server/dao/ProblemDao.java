@@ -1,6 +1,7 @@
 package edu.sustech.oj_server.dao;
 
 import edu.sustech.oj_server.entity.Problem;
+import edu.sustech.oj_server.toolclass.Sample;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
@@ -80,4 +81,7 @@ public interface ProblemDao {
 
     @Delete("delete from contest_problem where contest_id=#{contest_id} and problem_id=#{id}")
     void deleteProblemInContest(Integer id,Integer contest_id);
+
+    @Select("select input,output from extra_samples where problem_id = #{problem_id} order by id")
+    List<Sample> getExtraSamples(Integer problem_id);
 }

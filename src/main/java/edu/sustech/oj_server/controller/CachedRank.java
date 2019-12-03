@@ -96,7 +96,7 @@ public class CachedRank {
             problemConverter.put(i,Integer.toString(problemInContest.get(i-'A')));
         }
         for(int i=0;i<res.size();i++){
-           res.get(i).setRank(i+1);
+           res.get(i).setRank(Integer.toString(i+1));
            res.get(i).setProblemConvert(problemConverter);
         }
         System.out.println("Step 3 cost: "+(System.currentTimeMillis()-method_start_time));

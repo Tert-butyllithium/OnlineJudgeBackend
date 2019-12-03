@@ -23,7 +23,7 @@ public class Solve implements Comparable<Solve>{
 
     int contest_id;
 
-    int rank;
+    String rank;
 
     double total_time;
 
@@ -99,11 +99,11 @@ public class Solve implements Comparable<Solve>{
         return contest;
     }
 
-    public int getRank() {
+    public String getRank() {
         return rank;
     }
 
-    public void setRank(int rank) {
+    public void setRank(String rank) {
         this.rank = rank;
     }
 
