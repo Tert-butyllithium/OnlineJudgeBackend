@@ -22,8 +22,9 @@ open class User {
     var admin_type:String? = null
     val two_factor_auth = false
     val open_api = false
+    var observer:Boolean?=null
 
-    constructor(id: String?, email: String?, submit: Int?, solved: Int?, is_disabled: String?, ip: String?, accesstime: Timestamp?, volume: Int?, language: Int?, password: String?, create_time: Timestamp?, username: String?, school: String?) {
+    constructor(id: String?, email: String?, submit: Int?, solved: Int?, is_disabled: String?, ip: String?, accesstime: Timestamp?, volume: Int?, language: Int?, password: String?, create_time: Timestamp?, username: String?, school: String?,observer:Boolean?) {
         this.id = id
 //        this.id = abs(random.nextInt())
         this.email = email
@@ -40,7 +41,7 @@ open class User {
         this.school = school
         this.admin_type = if (Authentication.isAdministrator(id)) "Super Admin" else "Regular User"
         this.last_login = create_time
-
+        this.observer=observer
     }
 
 

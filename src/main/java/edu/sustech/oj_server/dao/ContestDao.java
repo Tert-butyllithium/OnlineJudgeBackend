@@ -26,6 +26,9 @@ public interface ContestDao {
     @Select("select count(*) from contest")
     int getNum();
 
+    @Select("select count(*) from contest where private =0")
+    int getVisibleNum();
+
     @Select("select problem_id from contest_problem where contest_id = #{id} order by num")
     List<Integer> getProblemsID(int id);
 

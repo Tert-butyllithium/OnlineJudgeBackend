@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.net.http.HttpRequest;
 import java.util.*;
 
 @RestController
@@ -26,9 +27,18 @@ public class ContestController {
     PrivilegeDao privilegeDao;
 
     @RequestMapping("/api/contests")
-    public ReturnType<ReturnListType<Contest>> list_contest(@RequestParam("limit") int limit, @RequestParam("offset") int offset){
-        var res=contestDao.listAllVisibleContest(offset,limit);
-        return new ReturnType<>(new ReturnListType<Contest>(res,contestDao.getNum()));
+    public ReturnType<ReturnListType<Contest>> list_contest(@RequestParam("limit") int limit,
+                                                            @RequestParam("offset") int offset,
+                                                            HttpServletRequest request){
+        User user= Authentication.getUser(request);
+        if((!Authentication.isAdministrator(user))) {
+            var res = contestDao.listAllVisibleContest(offset, limit);
+            return new ReturnType<>(new ReturnListType<Contest>(res, contestDao.getVisibleNum()));
+        }
+        else{
+            var res = contestDao.listAllContest(offset, limit);
+            return new ReturnType<>(new ReturnListType<Contest>(res, contestDao.getNum()));
+        }
     }
 
     @RequestMapping("/api/contest/problem")
@@ -58,7 +68,9 @@ public class ContestController {
         }
         else{
             int num=problem_id.charAt(0)-'A';
-            var res=problemDao.getProblemInContest(contest_id,num);
+//            var res=problemDao.getProblemInContest(contest_id,num);
+            var list=contestDao.getProblemsID(contest_id);
+            var res=problemDao.getProblem(list.get(num));
             if(res==null){
                 return new ReturnType<>("error","No such problem");
             }
@@ -70,8 +82,15 @@ public class ContestController {
     }
 
     @RequestMapping("/api/contest")
-    public ReturnType<Contest> getContest(@RequestParam("id") int id){
-        return new ReturnType<>(contestDao.getContest(id));
+    public ReturnType getContest(@RequestParam("id") int id, HttpServletRequest request){
+        User user= Authentication.getUser(request);
+        var res=contestDao.getContest(id);
+        if(!Authentication.isAdministrator(user)){
+            if(res==null||res.getPrivate()!=0){
+                return new ReturnType<>("error","No such contest");
+            }
+        }
+        return new ReturnType<>(res);
     }
 
     @GetMapping("/api/contest/access")

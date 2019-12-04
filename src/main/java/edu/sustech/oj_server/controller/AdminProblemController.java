@@ -21,7 +21,7 @@ public class AdminProblemController {
                                   @RequestParam(value = "keyword",required = false) String keyword) {
         if(id==null) {
             var res = problemDao.listAllProblemsForAdmin(keyword,offset, limit);
-            return new ReturnType<>(new ReturnListType<>(res, problemDao.getNum(keyword)));
+            return new ReturnType<>(new ReturnListType<>(res, problemDao.getNumForAdmin(keyword)));
         }
         else{
             return new ReturnType<>(problemDao.getProblem(id));
