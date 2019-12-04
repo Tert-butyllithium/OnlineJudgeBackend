@@ -11,7 +11,7 @@ public class MailServer {
     @Autowired
     private JavaMailSender javaMailSender;
 
-    @Value("LanranForces<${spring.mail.username}>")
+    @Value("南方科技大学程序设计竞赛<${spring.mail.username}>")
     private String emailUser;
 
     public void sendEmail(String target,String subject,String text) {

@@ -32,7 +32,7 @@ public interface SolutionDao {
 
     //select c.num, solution.problem_id, user_id, time, memory, in_date, result, language, ip, solution.contest_id, valid, solution.num, code_length, judgetime, pass_rate, lint_error, judger from solution join contest_problem c on solution.contest_id = c.contest_id where c.contest_id = '1054'
     @Select({"<script>",
-            "select solution.solution_id, c.num as problem_id, user_id, time, memory, in_date, result, language, ip, solution.contest_id, valid, solution.num, code_length, judgetime, pass_rate, lint_error, judger from solution join contest_problem c on solution.problem_id = c.problem_id and solution.contest_id =c.contest_id",
+            "select solution.solution_id, solution.problem_id as problem_id, user_id, time, memory, in_date, result, language, ip, solution.contest_id, valid, solution.num, code_length, judgetime, pass_rate, lint_error, judger from solution join contest_problem c on solution.problem_id = c.problem_id and solution.contest_id =c.contest_id",
             "where c.contest_id=#{contest_id}",
             "<when test='user!=null'>",
             "and  user_id= #{user}",
@@ -41,7 +41,7 @@ public interface SolutionDao {
             "and result= #{result}",
             "</when>",
             "<when test='problem_id!=null'>",
-            "and c.num= #{problem_id}",
+            "and solution.problem_id= #{problem_id}",
             "</when>",
             "order by solution.solution_id desc limit #{limit} offset #{offset}",
             "</script>"})

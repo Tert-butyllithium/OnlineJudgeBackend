@@ -146,7 +146,7 @@ public class Solution {
                      int result, Integer language,  String ip,  Integer contestId,  Byte valid,  Integer num,
                      Integer codeLength,  Timestamp judgetime,  BigDecimal passRate,  Integer lintError,  String judger) {
         this(id,problem,user_id,time,memory,inDate,result,language,ip,contestId,valid,num,codeLength,judgetime,passRate,lintError,judger);
-        this.user=new User(user_id,null,0,0,null,null,null,null,null,null,null,nick,null);
+        this.user=new User(user_id,null,0,0,null,null,null,null,null,null,null,nick,null,false);
     }
 
     public Solution(Integer problem,String username,String language,Integer contestId){

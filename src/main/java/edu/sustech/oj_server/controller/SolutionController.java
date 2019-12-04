@@ -95,15 +95,19 @@ public class SolutionController {
             }
             if(username==null||username.equals("")) username=null;
             Integer real_num=null;
-            if(problem_id!=null)
-                real_num=problem_id.charAt(0)-'A';
+            var problemList=contestDao.getProblemsID(contest_id);
+            if(problem_id!=null) {
+                real_num = problem_id.charAt(0) - 'A';
+                real_num = problemList.get(real_num);
+            }
+
             var res =solutionDao.getSolutionsInContestBy(username,result,real_num,contest_id,limit,offset);
             for(Solution sol:res){
-                if(isAdmin||sol.getUsername().equals(myname)){
+                if(isAdmin||(sol.getUsername().equals(myname)&&contestDao.getFrozen(contest_id)==null)){
                     sol.setShow_link(true);
                 }
-                char tmp=sol.getProblem().charAt(0);
-                sol.setProblem(String.valueOf((char)(tmp-'0'+'A')));
+                int tmp=problemList.indexOf(Integer.parseInt(sol.getProblem()));
+                sol.setProblem(String.valueOf((char)(tmp+'A')));
             }
             return new ReturnType<>(new ReturnListType<>(res,solutionDao.getNumInContest(username,result,real_num,contest_id)));
 
