@@ -7,10 +7,7 @@ import edu.sustech.oj_server.util.Authentication;
 import edu.sustech.oj_server.util.LoginUtil;
 import edu.sustech.oj_server.util.ReturnType;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -64,7 +61,7 @@ public class ProfileController {
     }
 
     @PostMapping("/api/change_password")
-    public ReturnType changePassword(LinkedHashMap hashMap,HttpServletRequest request){
+    public ReturnType changePassword(@RequestBody  LinkedHashMap hashMap, HttpServletRequest request){
         String old_password=hashMap.get("old_password").toString();
         String new_password=hashMap.get("new_password").toString();
         User user=Authentication.getUser(request);
