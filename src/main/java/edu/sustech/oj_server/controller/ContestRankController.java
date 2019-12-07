@@ -3,6 +3,7 @@ package edu.sustech.oj_server.controller;
 import edu.sustech.oj_server.dao.ContestDao;
 import edu.sustech.oj_server.entity.Contest;
 import edu.sustech.oj_server.entity.User;
+import edu.sustech.oj_server.toolclass.Solve;
 import edu.sustech.oj_server.util.Authentication;
 import edu.sustech.oj_server.util.ReturnListType;
 import edu.sustech.oj_server.util.ReturnType;
@@ -96,7 +97,7 @@ public class ContestRankController {
     public ReturnType<ReturnListType> getMyRank(@RequestParam("id") Integer id,HttpServletRequest request){
         Integer frozen=contestDao.getFrozen(id);
         if(frozen==null){
-            frozen=0;
+            frozen=-1000;
         }
         User user = Authentication.getUser(request);
         if(user==null){
@@ -107,10 +108,15 @@ public class ContestRankController {
         for(var c:ranklist){
             if(Objects.equals(c.getUser().getId(), user.getId())){
                 long end=contestDao.getContest(id).getEnd_time().getTime();
-                if(end-frozen*60*1000<System.currentTimeMillis()){
-                    c.setRank("?");
+                try {
+                    Solve solve = (Solve) c.clone();
+                    if (end - frozen * 60 * 1000 < System.currentTimeMillis()) {
+                        solve.setRank("?");
+                    }
+                    res.add(solve);
+                }catch (Exception e){
+                    e.printStackTrace();
                 }
-                res.add(c);
                 return new ReturnType<>(new ReturnListType(res,1));
             }
         }

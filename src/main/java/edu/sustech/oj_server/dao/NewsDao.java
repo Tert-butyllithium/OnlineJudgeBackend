@@ -14,4 +14,6 @@ public interface NewsDao {
 
     @Select("select news_id, user_id, title, content, time, importance, defunct from news where defunct = 'N'")
     List<News> listAllVisibleNews();
+
+
 }

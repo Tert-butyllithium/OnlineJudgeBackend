@@ -14,8 +14,8 @@ public class WebsiteController {
                 "    \"error\": null,\n" +
                 "    \"data\": {\n" +
                 "        \"website_base_url\": \"https:/lanran.club\",\n" +
-                "        \"website_name\": \"LanranForces Online Judge\",\n" +
-                "        \"website_name_shortcut\": \"Lanranforces\",\n" +
+                "        \"website_name\": \"SUSTechCPC Online Judge\",\n" +
+                "        \"website_name_shortcut\": \"SUSTechCPC\",\n" +
                 "        \"website_footer\": \"<a href=\\\"#\\\">粤ICP备19124180号-1</a>\",\n" +
                 "        \"allow_register\": false,\n" +
                 "        \"submission_list_show_all\": true\n" +
@@ -80,7 +80,7 @@ public class WebsiteController {
                 "                    },\n" +
                 "                    \"template\": \"//PREPEND BEGIN\\n#include <stdio.h>\\n//PREPEND END\\n\\n//TEMPLATE BEGIN\\nint add(int a, int b) {\\n  // Please fill this blank\\n  return ___________;\\n}\\n//TEMPLATE END\\n\\n//APPEND BEGIN\\nint main() {\\n  printf(\\\"%d\\\", add(1, 2));\\n  return 0;\\n}\\n//APPEND END\"\n" +
                 "                },\n" +
-                "                \"description\": \"GCC 5.4\",\n" +
+                "                \"description\": \"GCC 7.4\",\n" +
                 "                \"content_type\": \"text/x-csrc\"\n" +
                 "            },\n" +
                 "            {\n" +
@@ -120,7 +120,7 @@ public class WebsiteController {
                 "                    },\n" +
                 "                    \"template\": \"//PREPEND BEGIN\\n#include <iostream>\\n//PREPEND END\\n\\n//TEMPLATE BEGIN\\nint add(int a, int b) {\\n  // Please fill this blank\\n  return ___________;\\n}\\n//TEMPLATE END\\n\\n//APPEND BEGIN\\nint main() {\\n  std::cout << add(1, 2);\\n  return 0;\\n}\\n//APPEND END\"\n" +
                 "                },\n" +
-                "                \"description\": \"G++ 5.4\",\n" +
+                "                \"description\": \"G++ 7.4\",\n" +
                 "                \"content_type\": \"text/x-c++src\"\n" +
                 "            },\n" +
                 "            {\n" +
@@ -167,11 +167,11 @@ public class WebsiteController {
                 "                        \"max_memory\": 134217728,\n" +
                 "                        \"max_cpu_time\": 3000,\n" +
                 "                        \"max_real_time\": 10000,\n" +
-                "                        \"compile_command\": \"python3 -m py_compile ${files}\"\n" +
+                "                        \"compile_command\": \"pypy3 ${files}\"\n" +
                 "                    },\n" +
                 "                    \"template\": \"//PREPEND BEGIN\\n//PREPEND END\\n\\n//TEMPLATE BEGIN\\n//TEMPLATE END\\n\\n//APPEND BEGIN\\n//APPEND END\"\n" +
                 "                },\n" +
-                "                \"description\": \"Python 3.6.8\",\n" +
+                "                \"description\": \"PyPy 7.1.1\",\n" +
                 "                \"content_type\": \"text/x-python\"\n" +
                 "            },\n" +
                 "            {\n" +
@@ -241,7 +241,7 @@ public class WebsiteController {
                 "                    },\n" +
                 "                    \"template\": \"//PREPEND BEGIN\\n#include <stdio.h>\\n//PREPEND END\\n\\n//TEMPLATE BEGIN\\nint add(int a, int b) {\\n  // Please fill this blank\\n  return ___________;\\n}\\n//TEMPLATE END\\n\\n//APPEND BEGIN\\nint main() {\\n  printf(\\\"%d\\\", add(1, 2));\\n  return 0;\\n}\\n//APPEND END\"\n" +
                 "                },\n" +
-                "                \"description\": \"GCC 5.4\",\n" +
+                "                \"description\": \"GCC 7.4\",\n" +
                 "                \"content_type\": \"text/x-csrc\"\n" +
                 "            },\n" +
                 "            {\n" +
@@ -281,7 +281,7 @@ public class WebsiteController {
                 "                    },\n" +
                 "                    \"template\": \"//PREPEND BEGIN\\n#include <iostream>\\n//PREPEND END\\n\\n//TEMPLATE BEGIN\\nint add(int a, int b) {\\n  // Please fill this blank\\n  return ___________;\\n}\\n//TEMPLATE END\\n\\n//APPEND BEGIN\\nint main() {\\n  std::cout << add(1, 2);\\n  return 0;\\n}\\n//APPEND END\"\n" +
                 "                },\n" +
-                "                \"description\": \"G++ 5.4\",\n" +
+                "                \"description\": \"G++ 7.4\",\n" +
                 "                \"content_type\": \"text/x-c++src\"\n" +
                 "            }\n" +
                 "        ]\n" +

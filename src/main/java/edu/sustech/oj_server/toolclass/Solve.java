@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 
-public class Solve implements Comparable<Solve>{
+public class Solve implements Comparable<Solve>,Cloneable{
 
     int id;
     User user;
@@ -142,5 +142,10 @@ public class Solve implements Comparable<Solve>{
             }
         }
         return res.toString();
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 }
