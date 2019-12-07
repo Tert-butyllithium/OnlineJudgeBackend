@@ -5,6 +5,7 @@ import edu.sustech.oj_server.toolclass.Sample;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
@@ -84,4 +85,5 @@ public interface ProblemDao {
 
     @Select("select input,output from extra_samples where problem_id = #{problem_id} order by id")
     List<Sample> getExtraSamples(Integer problem_id);
+
 }

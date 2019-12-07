@@ -9,12 +9,16 @@ public class Status{
     public Double ac_time;
     public Boolean is_first_ac;
     public Integer error_number;
+    public Integer try_number;
+
+
 
     public Status() {
         this.is_ac=false;
         this.ac_time=0.00;
         this.is_first_ac=false;
         this.error_number=0;
+        this.try_number=0;
     }
 
     public boolean isIs_ac() {
@@ -47,5 +51,13 @@ public class Status{
 
     public void setError_number(int error_number) {
         this.error_number = error_number;
+    }
+
+    public Integer getTry_number() {
+        return try_number;
+    }
+
+    public void setTry_number(Integer try_number) {
+        this.try_number = try_number;
     }
 }

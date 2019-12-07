@@ -68,6 +68,9 @@ public class CachedRank {
                 }
                 mysolves.setTotal_time(mysolves.getTotal_time()+saa.ac_time);
             }
+            else if(s.getResult()==6){
+                saa.try_number++;
+            }
             else{
                 saa.error_number++;
             }
@@ -127,6 +130,9 @@ public class CachedRank {
         }
         out.println(header);
         for(var c:list){
+            if(c.getRank().equals("*")){
+                continue;
+            }
             out.println(c);
         }
         out.close();

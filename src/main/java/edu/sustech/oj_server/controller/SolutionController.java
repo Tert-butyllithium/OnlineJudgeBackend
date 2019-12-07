@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 public class SolutionController {
@@ -40,7 +41,7 @@ public class SolutionController {
     ){
         String myname=null;
         User user= Authentication.getUser(request);
-        boolean isAdmin = Authentication.isAdministrator(user);
+        boolean isAdmin = user!=null&&Authentication.isAdministrator(user);
         if(user!=null){
             myname=user.getId();
         }
@@ -54,13 +55,22 @@ public class SolutionController {
             result= HUSTToQDU.translateStatusInverse(result);
         }
         if(username==null||username.equals("")) username=null;
-        var res=solutionDao.getSolutionsBy(username,result,problem_id,limit,offset);
+        List<Solution> res;
+        int num;
+        if(isAdmin){
+             res=solutionDao.getSolutionsForAdminBy(username,result,problem_id,limit,offset);
+             num = solutionDao.getNumForAdmin(username,result,problem_id);
+        }
+        else {
+            res = solutionDao.getSolutionsBy(username, result, problem_id, limit, offset);
+            num = solutionDao.getNum(username,result,problem_id);
+        }
         for(Solution sol:res){
             if(isAdmin||sol.getUsername().equals(myname)){
                 sol.setShow_link(true);
             }
         }
-        return new ReturnType<>(new ReturnListType<>(res,solutionDao.getNum(username,result,problem_id)));
+        return new ReturnType<>(new ReturnListType<>(res,num));
     }
 
     @RequestMapping("/api/contest_submissions")
@@ -109,7 +119,9 @@ public class SolutionController {
                 int tmp=problemList.indexOf(Integer.parseInt(sol.getProblem()));
                 sol.setProblem(String.valueOf((char)(tmp+'A')));
             }
-            return new ReturnType<>(new ReturnListType<>(res,solutionDao.getNumInContest(username,result,real_num,contest_id)));
+            int nums=solutionDao.getNumInContest(username,result,real_num,contest_id);
+//            System.out.println("("+username+", "+result+", "+real_num+", "+contest_id+",+" + nums+")");
+            return new ReturnType<>(new ReturnListType<>(res,nums));
 
     }
 

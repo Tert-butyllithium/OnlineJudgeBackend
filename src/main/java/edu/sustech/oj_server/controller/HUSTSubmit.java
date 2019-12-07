@@ -3,6 +3,7 @@ package edu.sustech.oj_server.controller;
 import com.alibaba.fastjson.JSONObject;
 import edu.sustech.oj_server.dao.*;
 import edu.sustech.oj_server.entity.Contest;
+import edu.sustech.oj_server.entity.Problem;
 import edu.sustech.oj_server.entity.Solution;
 import edu.sustech.oj_server.entity.User;
 import edu.sustech.oj_server.util.Authentication;
@@ -22,6 +23,7 @@ import java.sql.Struct;
 import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.Objects;
 
 @RestController
 public final class HUSTSubmit {
@@ -146,6 +148,15 @@ public final class HUSTSubmit {
         }
         if (myname == null) return new ReturnType<>("error", "Please login first");
 
+        if(code==null||code.problem_id==null){
+            return new ReturnType("error","Problem does not exist");
+        }
+
+        Problem p =problemDao.getProblem(code.problem_id);
+        if(code.contest_id==null&&(!Authentication.isAdministrator(user))&& Objects.equals(p.getDefunct(), "Y")){
+            return new ReturnType("error","Problem does not exist");
+        }
+
         Solution tmp = new Solution(code.problem_id, myname, code.language, code.contest_id);
         if (code.contest_id != null) {
             Integer num = problemDao.getNumInContest(code.contest_id, code.problem_id);
@@ -191,7 +202,7 @@ public final class HUSTSubmit {
         if (!token.equals(this.token)) {
             return new ReturnType("error", "error");
         }
-        System.out.println("Message from the judge server");
+//        System.out.println("Message from the judge server");
         Solution solution = solutionDao.getSolution(solution_id);
         Integer contest_id = solution.getContestId();
         if (contest_id != null) {
@@ -202,6 +213,7 @@ public final class HUSTSubmit {
             if (frozen != 0)
                 cachedRank.refresh(contest_id, frozen);
             cachedRank.refresh(contest_id, 0);
+
         }
         return new ReturnType(null);
     }

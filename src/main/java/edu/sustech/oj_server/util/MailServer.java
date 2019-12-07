@@ -11,13 +11,13 @@ public class MailServer {
     @Autowired
     private JavaMailSender javaMailSender;
 
-    @Value("南方科技大学程序设计竞赛<${spring.mail.username}>")
+    @Value("LanranForces<${spring.mail.username}>")
     private String emailUser;
 
     public void sendEmail(String target,String subject,String text) {
 
         SimpleMailMessage msg = new SimpleMailMessage();
-        System.out.println(emailUser);
+        System.out.println("sending email to: "+target);
         msg.setFrom(emailUser);
         msg.setTo(target);
         msg.setSubject(subject);

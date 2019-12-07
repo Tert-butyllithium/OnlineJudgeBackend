@@ -46,6 +46,9 @@ public class ContestController {
                                            @RequestParam(value = "problem_id",required = false) String problem_id, HttpServletRequest request){
         User user= Authentication.getUser(request);
         if(problem_id==null){
+            if(contest_id==null){
+                return new ReturnType<>("error","No such contest");
+            }
             var res=contestDao.getProblemsID(contest_id);
             if(res==null){
                 return new ReturnType<>("error","No such contest");
@@ -74,7 +77,8 @@ public class ContestController {
             if(res==null){
                 return new ReturnType<>("error","No such problem");
             }
-            res.setTime_limit(res.getTime_limit()*1000);
+            res.setTime_limit(res.getTime_limit());
+            Objects.requireNonNull(res.getSamples()).addAll(problemDao.getExtraSamples(res.getId()));
 //            res.setId();
             res.set_id(problem_id);
             return new ReturnType<>(res);

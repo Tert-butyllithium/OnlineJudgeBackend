@@ -57,8 +57,14 @@ public class ProblemController {
         }
         else{
             var res= problemDao.getProblem(id);
-            Objects.requireNonNull(res.getSamples()).addAll(problemDao.getExtraSamples(id));
+
             User user= Authentication.getUser(request);
+            if(res==null||res.getDefunct().equals("Y")){
+                if(user==null||(!Authentication.isAdministrator(user))){
+                    return new ReturnType<>("error","Problem does not exist");
+                }
+            }
+            Objects.requireNonNull(res.getSamples()).addAll(problemDao.getExtraSamples(id));
             if(user!=null&&user.getId()!=null){
                 var tmp=problemDao.ACinProblems(user.getId(),res.getId());
                 if(tmp!=null&&tmp.compareTo(0)>0)
