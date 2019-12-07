@@ -130,7 +130,7 @@ public class Solve implements Comparable<Solve>,Cloneable{
     public String toString() {
         StringBuilder res = new StringBuilder(this.rank+"," + this.user.getId()+","+this.accepted_number + "," + ((long)this.total_time)/60);
 
-        for(char i='A';i<'A'+this.submission_info.size();i++){
+        for(char i='A';i<'A'+this.problemConvert.size();i++){
             res.append(", ");
             var x=problemConvert.get(i);
             if(this.submission_info.containsKey(x)&&this.submission_info.get(x).is_ac) {
