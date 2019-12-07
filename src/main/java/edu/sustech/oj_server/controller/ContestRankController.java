@@ -54,7 +54,7 @@ public class ContestRankController {
                 if (user == null || !admin) {
                     return new ReturnType("error", "you are not administrator");
                 }
-                CachedRank.writeCSV(Integer.toString(contest_id),cachedRank.getRank(contest_id,0));
+                CachedRank.writeCSV(Integer.toString(contest_id),contestDao.getProblemsID(contest_id).size(),cachedRank.getRank(contest_id,0));
                 File file = new File("cachedrank/"+contest_id+".csv");
                 Path path = Paths.get(file.getAbsolutePath());
                 ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(path));

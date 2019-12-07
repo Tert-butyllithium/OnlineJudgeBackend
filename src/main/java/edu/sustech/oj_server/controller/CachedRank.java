@@ -114,7 +114,7 @@ public class CachedRank {
         return res;
     }
 
-    public static void writeCSV(String contest,List<Solve> list) throws FileNotFoundException {
+    public static void writeCSV(String contest,Integer problem_count, List<Solve> list) throws FileNotFoundException {
 
 
         String path="cachedrank/"+contest+".csv";
@@ -125,7 +125,7 @@ public class CachedRank {
         PrintWriter out=new PrintWriter(path);
         StringBuilder header=new StringBuilder();
         header.append("Rank,User,Solved,TotalTime");
-        for(char i='A';i<list.get(0).getSubmission_info().size()+'A';i++){
+        for(char i='A';i<problem_count+'A';i++){
             header.append(","+i);
         }
         out.println(header);
