@@ -36,7 +36,7 @@ public class SocketClient {
 	private int setID = STARTING_SETID;
 	private long optM = 100;
 	private int optD = 0;
-	private int optX = 1;
+	private int optX = 0;
 	private long optN = 5000;
 	private String optC = "";
 	private URL resultURL;

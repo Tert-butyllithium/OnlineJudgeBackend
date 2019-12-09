@@ -14,9 +14,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import javax.sound.midi.SysexMessage;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,53 +52,53 @@ public class Plagiarism {
         scd=sourceCodeDao;
     }
 
-    public static List<Sim> parse(URL url) throws IOException {
-        ArrayList<Sim> result=new ArrayList<>();
-        Document document = Jsoup.connect(String.valueOf(url)).get();
-        Elements elements=document.getElementsByTag("tr");
-        System.out.println(elements.size());
-        int cnt=0;
-        for (Element element: elements) {
-            Elements res = element.getElementsByTag("td");
-            if (res.size() == 0) continue;
-
-            int leftId = 0;
-            int rightId = 0;
-            String leftUser = "";
-            String rightUser = "";
-            int leftSim = 0;
-            int rightSim = 0;
-
-            for (Element ele : res) {
-                Pattern pattern = Pattern.compile("([^ ()])+ \\((\\d)+%\\)");
-                Matcher m = pattern.matcher(ele.text());
-                if (m.find()) {
-                    String cur = m.group(0);
-                    String[] curs = cur.split(" ");
-
-                    String[] su = curs[0].split("/");
-
-                    int sid = Integer.parseInt(su[0]);
-                    String uid = su[1];
-
-                    int similar = Integer.parseInt(curs[1].substring(1, curs[1].length() - 2));
-
-                    if (leftId > 0) {
-                        rightId = sid;
-                        rightUser = uid;
-                        rightSim = similar;
-                    } else {
-                        leftId = sid;
-                        leftUser = uid;
-                        leftSim = similar;
-                    }
-                }
-            }
-            if (rightUser.compareTo(leftUser) == 0) continue;
-            result.add(leftId > rightId ? new Sim(leftId, rightId, leftSim) : new Sim(rightId, leftId, rightSim));
-        }
-        return result;
-    }
+//    public static List<Sim> parse(URL url) throws IOException {
+//        ArrayList<Sim> result=new ArrayList<>();
+//        Document document = Jsoup.connect(String.valueOf(url)).get();
+//        Elements elements=document.getElementsByTag("tr");
+//        System.out.println(elements.size());
+//        int cnt=0;
+//        for (Element element: elements) {
+//            Elements res = element.getElementsByTag("td");
+//            if (res.size() == 0) continue;
+//
+//            int leftId = 0;
+//            int rightId = 0;
+//            String leftUser = "";
+//            String rightUser = "";
+//            int leftSim = 0;
+//            int rightSim = 0;
+//
+//            for (Element ele : res) {
+//                Pattern pattern = Pattern.compile("([^ ()])+ \\((\\d)+%\\)");
+//                Matcher m = pattern.matcher(ele.text());
+//                if (m.find()) {
+//                    String cur = m.group(0);
+//                    String[] curs = cur.split(" ");
+//
+//                    String[] su = curs[0].split("/");
+//
+//                    int sid = Integer.parseInt(su[0]);
+//                    String uid = su[1];
+//
+//                    int similar = Integer.parseInt(curs[1].substring(1, curs[1].length() - 2));
+//
+//                    if (leftId > 0) {
+//                        rightId = sid;
+//                        rightUser = uid;
+//                        rightSim = similar;
+//                    } else {
+//                        leftId = sid;
+//                        leftUser = uid;
+//                        leftSim = similar;
+//                    }
+//                }
+//            }
+//            if (rightUser.compareTo(leftUser) == 0) continue;
+//            result.add(leftId > rightId ? new Sim(leftId, rightId, leftSim) : new Sim(rightId, leftId, rightSim));
+//        }
+//        return result;
+//    }
     public static String toLanguage(int languageId){
         String language;
         switch (languageId){
@@ -120,67 +125,47 @@ public class Plagiarism {
         }
         return language;
     }
-    public void run(int contestId) throws IOException, MossException {
+    public void run(int contestId) throws IOException {
         List<Problem> problems= pd.getProblemsInContest(contestId);
-        Map<Integer, Sim> map = new HashMap<>();
+        ArrayList<Info> result = new ArrayList<>();
         for (int language=0; language<=6; ++language){//for each language
-
             for (Problem pb: problems){// for each problem
-//                if (pb.getId()!=1014) continue;
-                List<SourceCode> sourceCodes=scd.getSourceCodeByCTL(contestId, pb.getId(), language);
-                if (sourceCodes.size()==0) continue;
+                URL url;
+                if ((url=getMossURL(contestId, pb.getId(), language))==null) continue;
 
-                URL result;
-                while (true){
-                    try{
-                        SocketClient socketClient = new SocketClient();
-                        socketClient.init();
-                        socketClient.setLanguage(toLanguage(language));
-                        for (SourceCode sourceCode: sourceCodes){
-                            socketClient.addContent(sourceCode);
-                        }
-                        result=socketClient.request();
-                        System.out.println(result);
-                        break;
-                    }catch (MossException e){
-                        //do nothing
-                    }
-                }
-
-                List<Sim> sims;
-                while (true){
-                    try{
-                        sims = parse(result);
-                        break;
-                    }catch (java.net.SocketTimeoutException e){
-                        //do nothing
-                    }
-                }
-
-                for(Sim sim: sims){
-                    if (!map.containsKey(sim.getS_id())) {
-                        map.put(sim.getS_id(), sim);
-                    }else if (map.get(sim.getS_id()).getPer() < sim.getPer()) {
-                        map.put(sim.getS_id(), sim);
-                    }
-                }
+                MossParser mossParser = new MossParser(url);
+                List<Info> infos = mossParser.parse();
+                result.addAll(infos);
+                infos.forEach(System.out::println);
             }
         }
-        //insert into DB
-        for (Sim sim: map.values()){
-            if (sim.getPer()>=70){
-                sd.insert(sim.getS_id(),sim.getSim_s_id(),sim.getPer());
+        result.forEach(info -> {sd.insert(info.getSolId(), info.getSimSolId(), info.getSim());});
+    }
+    private URL getMossURL(int contestId, int problem, int language) throws IOException {
+        List<SourceCode> sourceCodes=scd.getSourceCodeByCTL(contestId, problem, language);
+        if (sourceCodes.size()==0) return null;
+        URL result;
+        while (true){
+            try{
+                SocketClient socketClient = new SocketClient();
+                socketClient.init();
+                socketClient.setLanguage(toLanguage(language));
+                for (SourceCode sourceCode: sourceCodes){
+                    socketClient.addContent(sourceCode);
+                }
+                result=socketClient.request();
+                System.out.println(result);
+                break;
+            }catch (MossException e){
+                //do nothing
+                System.out.println("MossException: Retrying");
+                e.printStackTrace();
             }
         }
+        return result;
     }
 
-
-
     public static void main(String[] args) throws IOException {
-        List<Sim> sims = parse(new URL("http://moss.stanford.edu/results/771062598/"));
-
-//        for(Sim sim: sims){
-//            System.out.println(sim);
-//        }
+//        List<Sim> sims = parse(new URL("http://moss.stanford.edu/results/246240969/"));
     }
 }
