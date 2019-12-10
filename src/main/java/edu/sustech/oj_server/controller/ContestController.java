@@ -56,6 +56,8 @@ public class ContestController {
             List<Problem> problems=new ArrayList<>();
             for(int i=0;i<res.size();i++){
                 var p=problemDao.getProblem(res.get(i));
+                p.setAccepted_number(problemDao.getProblemACinContest(res.get(i),contest_id));
+                p.setSubmission_number(problemDao.getProblemSubmissionInContest(res.get(i),contest_id));
                 p.set_id(String.valueOf((char)('A'+i)));
                 if(user!=null){
                     if(problemDao.ACinContest(user.getId(),p.getId(),contest_id)>0){
@@ -65,6 +67,7 @@ public class ContestController {
                         p.setMy_status(-2);
                     }
                 }
+
                 problems.add(p);
             }
             return new ReturnType<>(problems);

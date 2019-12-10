@@ -112,11 +112,11 @@ public class Solve implements Comparable<Solve>,Cloneable{
     }
 
     public double getTotal_time() {
-        return total_time;
+        return this.total_time;
     }
 
     public double penalty(){
-        return this.total_time+20*60*(this.submission_number-this.accepted_number);
+        return this.total_time;
     }
 
     public int compareTo(Solve solve) {

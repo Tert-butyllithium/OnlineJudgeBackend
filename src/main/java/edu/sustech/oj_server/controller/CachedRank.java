@@ -60,7 +60,7 @@ public class CachedRank {
             if(saa.is_ac) continue;
             if(s.getResult()==0){
                 saa.is_ac=true;
-                saa.ac_time=(s.getCreate_time().getTime()-start)/1000.0;
+                saa.ac_time=(s.getCreate_time().getTime()-start)/1000.0+saa.error_number*20*60;
                 mysolves.setAccepted_number(mysolves.getAccepted_number()+1);
                 if(!solved.contains(s.getProblem())){
                     solved.add(s.getProblem());

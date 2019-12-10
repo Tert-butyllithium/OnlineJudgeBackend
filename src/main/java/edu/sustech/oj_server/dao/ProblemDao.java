@@ -80,6 +80,12 @@ public interface ProblemDao {
     @Select("select count(*) from solution where solution.user_id=#{user_id} and solution.problem_id = #{problem_id} and solution.result=4 and solution.contest_id=#{contest_id} order by solution_id limit 1")
     Integer ACinContest(String user_id,Integer problem_id,Integer contest_id);
 
+    @Select("select count(*) from solution where solution.problem_id = #{problem_id} and solution.result=4 and solution.contest_id=#{contest_id}")
+    Integer getProblemACinContest(Integer problem_id,Integer contest_id);
+
+    @Select("select count(*) from solution where solution.problem_id = #{problem_id} and solution.contest_id=#{contest_id}")
+    Integer getProblemSubmissionInContest(Integer problem_id,Integer contest_id);
+
     @Delete("delete from contest_problem where contest_id=#{contest_id} and problem_id=#{id}")
     void deleteProblemInContest(Integer id,Integer contest_id);
 

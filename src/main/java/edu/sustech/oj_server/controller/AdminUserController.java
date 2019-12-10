@@ -43,7 +43,7 @@ public class AdminUserController {
         return new ReturnType(null);
     }
 
-    private String registerSubject="南方科技大学程序设计竞赛网络赛账号";
+    private String registerSubject="Subject";
 
     private String endOfMail="Lanranforces";
 
