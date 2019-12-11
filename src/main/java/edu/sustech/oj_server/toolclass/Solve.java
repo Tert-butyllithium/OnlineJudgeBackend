@@ -27,6 +27,16 @@ public class Solve implements Comparable<Solve>,Cloneable{
 
     double total_time;
 
+    double penalty;
+
+    public double getPenalty() {
+        return penalty;
+    }
+
+    public void setPenalty(double penalty) {
+        this.penalty = penalty;
+    }
+
     Map<String, Status> submission_info;
 
     Map<Character,String> problemConvert;
@@ -115,20 +125,17 @@ public class Solve implements Comparable<Solve>,Cloneable{
         return this.total_time;
     }
 
-    public double penalty(){
-        return this.total_time;
-    }
 
     public int compareTo(Solve solve) {
         if(accepted_number==solve.accepted_number){
-            return Double.compare(this.penalty(),solve.penalty());
+            return Double.compare(this.penalty,solve.penalty);
         }
         return Integer.compare(solve.accepted_number,this.accepted_number);
     }
 
     @Override
     public String toString() {
-        StringBuilder res = new StringBuilder(this.rank+"," + this.user.getId()+","+this.accepted_number + "," + ((long)this.total_time)/60);
+        StringBuilder res = new StringBuilder(this.rank+"," + this.user.getId()+","+this.accepted_number + "," + ((long)this.penalty)/60);
 
         for(char i='A';i<'A'+this.problemConvert.size();i++){
             res.append(", ");

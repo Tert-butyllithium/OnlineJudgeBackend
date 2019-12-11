@@ -48,7 +48,8 @@ public class CachedRank {
                 continue;
             }
             if(s.getCreate_time().after(frozentime)){
-                continue;
+//                continue;
+                s.setResult(0);
             }
             userSubmissions.putIfAbsent(s.getUser_id(),new Solve());
             var mysolves=userSubmissions.get(s.getUsername());
@@ -60,13 +61,15 @@ public class CachedRank {
             if(saa.is_ac) continue;
             if(s.getResult()==0){
                 saa.is_ac=true;
-                saa.ac_time=(s.getCreate_time().getTime()-start)/1000.0+saa.error_number*20*60;
+                saa.ac_time=(s.getCreate_time().getTime()-start)/1000.0;
+                saa.penalty=saa.ac_time+saa.error_number*20*60;
                 mysolves.setAccepted_number(mysolves.getAccepted_number()+1);
                 if(!solved.contains(s.getProblem())){
                     solved.add(s.getProblem());
                     saa.is_first_ac=true;
                 }
-                mysolves.setTotal_time(mysolves.getTotal_time()+saa.ac_time);
+                mysolves.setTotal_time(mysolves.getTotal_time()+saa.penalty);
+                mysolves.setPenalty(mysolves.getPenalty()+saa.penalty);
             }
             else if(s.getResult()==6){
                 saa.try_number++;

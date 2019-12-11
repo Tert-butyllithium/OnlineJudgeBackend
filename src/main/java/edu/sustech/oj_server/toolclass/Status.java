@@ -10,7 +10,7 @@ public class Status{
     public Boolean is_first_ac;
     public Integer error_number;
     public Integer try_number;
-
+    public Double penalty;
 
 
     public Status() {
@@ -19,6 +19,7 @@ public class Status{
         this.is_first_ac=false;
         this.error_number=0;
         this.try_number=0;
+        this.penalty=0.00;
     }
 
     public boolean isIs_ac() {
