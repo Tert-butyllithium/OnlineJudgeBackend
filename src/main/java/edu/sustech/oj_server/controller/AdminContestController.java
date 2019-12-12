@@ -66,7 +66,17 @@ public class AdminContestController {
                 }
             }
         }
-        list.sort((a,b)->b.getAc_time().compareTo(a.getAc_time()));
+        list.sort((a,b)->{
+            if(a.getChecked()!=b.getChecked()){
+                if(a.getChecked()){
+                    return 1;
+                }
+                else{
+                    return -1;
+                }
+            }
+            return a.getAc_time().compareTo(b.getAc_time());
+        });
         return new ReturnType(list);
     }
 
