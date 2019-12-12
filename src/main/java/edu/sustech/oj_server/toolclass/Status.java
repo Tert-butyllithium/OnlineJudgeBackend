@@ -7,14 +7,14 @@ import java.security.PublicKey;
  * used in RankList and Balloon
  */
 public class Status{
-    public Boolean is_ac;
-    public Double ac_time;
-    public Boolean is_first_ac;
-    public Integer error_number;
-    public Integer try_number;
-    public Double penalty;
-    public Boolean checked;
-    public Integer solution_id;
+    public boolean is_ac;
+    public double ac_time;
+    public boolean is_first_ac;
+    public int error_number;
+    public int try_number;
+    public double penalty;
+    public boolean checked;
+    public int solution_id;
 
     public Status() {
         this.is_ac=false;
@@ -23,6 +23,7 @@ public class Status{
         this.error_number=0;
         this.try_number=0;
         this.penalty=0.00;
+        this.checked=false;
     }
 
     public boolean isIs_ac() {

@@ -124,6 +124,9 @@ public interface SolutionDao {
     @Update("update solution set result = 0 where solution_id=#{id}")
     void rejugde(Integer id);
 
+    @Update("update solution set checked = 1 where solution_id=#{solution_id}")
+    void check(Integer solution_id);
+
     @Select("select contest_id from solution where solution_id=#{solution_id}")
     Integer getContestId(Integer solution_id);
 }

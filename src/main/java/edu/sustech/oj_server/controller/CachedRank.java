@@ -99,8 +99,9 @@ public class CachedRank {
             var sa = mysolves.getSubmission_info();
             sa.putIfAbsent(s.getProblem(), new Status());
             var saa = sa.get(s.getProblem());
-            saa.solution_id=Integer.parseInt(s.getProblem());
-            if (saa.is_ac) continue;
+
+            if (saa.is_ac)
+                continue;
             if (s.getResult() == 0) {
                 saa.is_ac = true;
                 saa.ac_time = (s.getCreate_time().getTime() - start) / 1000.0;
@@ -110,9 +111,10 @@ public class CachedRank {
                     solved.add(s.getProblem());
                     saa.is_first_ac = true;
                 }
+                saa.solution_id=Integer.parseInt(s.getId());
                 mysolves.setTotal_time(mysolves.getTotal_time() + saa.penalty);
                 mysolves.setPenalty(mysolves.getPenalty() + saa.penalty);
-                saa.checked=s.checked;
+                saa.checked=s.checked||saa.checked;
             } else if (s.getResult() == 6) {
                 saa.try_number++;
             } else {

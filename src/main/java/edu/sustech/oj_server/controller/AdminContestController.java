@@ -3,6 +3,7 @@ package edu.sustech.oj_server.controller;
 import edu.sustech.oj_server.dao.BalloonDao;
 import edu.sustech.oj_server.dao.ContestDao;
 import edu.sustech.oj_server.dao.ProblemDao;
+import edu.sustech.oj_server.dao.SolutionDao;
 import edu.sustech.oj_server.entity.Balloon;
 import edu.sustech.oj_server.entity.Contest;
 import edu.sustech.oj_server.entity.Problem;
@@ -17,12 +18,13 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 @RestController
 @RequestMapping("/api/admin/contest")
 public class AdminContestController {
     @Autowired
-    private BalloonDao balloonDao;
+    private SolutionDao solutionDao;
     @Autowired
     private ContestDao contestDao;
     @Autowired
@@ -58,7 +60,7 @@ public class AdminContestController {
                     balloon.setReal_name("unknown");
                     balloon.setAc_time(xx.getValue().ac_time);
                     balloon.setProblem_id(xx.getKey());
-                    balloon.setChecked(false);
+                    balloon.setChecked(xx.getValue().checked);
                     balloon.setId(xx.getValue().solution_id);
                     list.add(balloon);
                 }
@@ -69,13 +71,24 @@ public class AdminContestController {
     }
 
     @PutMapping("acm_helper")
-    public ReturnType checkBalloon(HttpServletRequest request){
+    public ReturnType checkBalloon(@RequestBody LinkedHashMap map, HttpServletRequest request){
         User user = Authentication.getUser(request);
         boolean admin = Authentication.isAdministrator(user);
+
         if (user == null || !admin) {
             return new ReturnType("login-required", "Please login in first");
         }
-        return new ReturnType("error","not supported");
+//        System.out.println(map);
+        Integer solutionId= (Integer) map.get("rank_id");
+        Integer contestId=Integer.parseInt(map.get("contest_id").toString());
+        try {
+            solutionDao.check(solutionId);
+            cachedRank.refresh(contestId,contestDao.getFrozen(contestId));
+        }catch (Exception e){
+            e.printStackTrace();
+            return new ReturnType("error",e.getMessage());
+        }
+        return new ReturnType(null);
     }
 
     @PostMapping("")

@@ -141,7 +141,7 @@ public class Solve implements Comparable<Solve>,Cloneable{
             res.append(", ");
             var x=problemConvert.get(i);
             if(this.submission_info.containsKey(x)&&this.submission_info.get(x).is_ac) {
-                var seconds = this.submission_info.get(x).ac_time.longValue();
+                long seconds = (long) this.submission_info.get(x).ac_time;
                 res.append( seconds / 60);
             }
             if(this.submission_info.containsKey(x)&&this.submission_info.get(x).error_number>0){
