@@ -37,6 +37,8 @@ public final class HUSTSubmit {
     ProblemDao problemDao;
     @Autowired
     ContestDao contestDao;
+    @Autowired
+    BalloonDao balloonDao;
 
     private static final int CODE_LENGTH_LIMIT = 56 * 1024;
 

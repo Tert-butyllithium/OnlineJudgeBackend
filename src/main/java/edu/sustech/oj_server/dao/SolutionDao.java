@@ -48,7 +48,7 @@ public interface SolutionDao {
 
     //select c.num, solution.problem_id, user_id, time, memory, in_date, result, language, ip, solution.contest_id, valid, solution.num, code_length, judgetime, pass_rate, lint_error, judger from solution join contest_problem c on solution.contest_id = c.contest_id where c.contest_id = '1054'
     @Select({"<script>",
-            "select solution.solution_id, solution.problem_id as problem_id, user_id, time, memory, in_date, result, language, ip, solution.contest_id, valid, solution.num, code_length, judgetime, pass_rate, lint_error, judger from solution join contest_problem c on solution.problem_id = c.problem_id and solution.contest_id =c.contest_id",
+            "select solution.solution_id, solution.problem_id as problem_id, user_id, time, memory, in_date, result, language, ip, solution.contest_id, valid, solution.num, code_length, judgetime, pass_rate, lint_error, judger, checked from solution join contest_problem c on solution.problem_id = c.problem_id and solution.contest_id =c.contest_id",
             "where c.contest_id=#{contest_id}",
             "<when test='user!=null'>",
             "and  user_id= #{user}",
@@ -63,27 +63,8 @@ public interface SolutionDao {
             "</script>"})
     List<Solution> getSolutionsInContestBy(String user,Integer result,Integer problem_id,int contest_id,int limit,int offset);
 
-    @Select("\n" +
-            "select solution_id,\n" +
-            "       solution.problem_id,\n" +
-            "       user_id,\n" +
-//            "       nick,\n" +
-            "       time,\n" +
-            "       memory,\n" +
-            "       in_date,\n" +
-            "       result,\n" +
-            "       solution.language,\n" +
-            "       solution.ip,\n" +
-            "       contest_id,\n" +
-            "       valid,\n" +
-            "       solution.num,\n" +
-            "       code_length,\n" +
-            "       judgetime,\n" +
-            "       pass_rate,\n" +
-            "       lint_error,\n" +
-            "       judger\n" +
-            "       from solution\n" +
-            "where solution.contest_id =#{contest_id} and result!=11 order by solution_id")
+    @Select("select * from solution "+
+            "where contest_id =#{contest_id} and result!=11 order by solution_id")
     List<Solution> listSolutionsInContest(int contest_id);
 
     @Select({"<script>",

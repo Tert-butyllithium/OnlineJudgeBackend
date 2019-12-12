@@ -3,10 +3,12 @@ package edu.sustech.oj_server.controller;
 import edu.sustech.oj_server.dao.BalloonDao;
 import edu.sustech.oj_server.dao.ContestDao;
 import edu.sustech.oj_server.dao.ProblemDao;
+import edu.sustech.oj_server.entity.Balloon;
 import edu.sustech.oj_server.entity.Contest;
 import edu.sustech.oj_server.entity.Problem;
 import edu.sustech.oj_server.entity.User;
 import edu.sustech.oj_server.toolclass.ProblemInContest;
+import edu.sustech.oj_server.toolclass.Status;
 import edu.sustech.oj_server.util.Authentication;
 import edu.sustech.oj_server.util.ReturnListType;
 import edu.sustech.oj_server.util.ReturnType;
@@ -26,6 +28,12 @@ public class AdminContestController {
     @Autowired
     private ProblemDao problemDao;
 
+    private final CachedRank cachedRank;
+
+    public AdminContestController(CachedRank cachedRank) {
+        this.cachedRank = cachedRank;
+    }
+
     @GetMapping("acm_helper")
     public ReturnType listBalloons(@RequestParam("contest_id") int contest_id, HttpServletRequest request) {
         User user = Authentication.getUser(request);
@@ -33,7 +41,41 @@ public class AdminContestController {
         if (user == null || !admin) {
             return new ReturnType("login-required", "Please login in first");
         }
-        return new ReturnType(balloonDao.listAllBalloons(contest_id));
+        Integer frozen=contestDao.getFrozen(contest_id);
+        if(frozen==null){
+            return new ReturnType("error","contest type not support");
+        }
+
+        var problem_list=contestDao.getProblemsID(contest_id);
+        var userSubmissions=cachedRank.getRank(contest_id,frozen);
+        ArrayList<Balloon> list=new ArrayList<>();
+        for(var x:userSubmissions){
+            for(var xx:x.getSubmission_info().entrySet()){
+                if(xx.getValue().is_ac){
+                    Balloon balloon=new Balloon();
+                    balloon.setAc_info(xx.getValue());
+                    balloon.setUsername(x.getUser().getUsername());
+                    balloon.setReal_name("unknown");
+                    balloon.setAc_time(xx.getValue().ac_time);
+                    balloon.setProblem_id(xx.getKey());
+                    balloon.setChecked(false);
+                    balloon.setId(xx.getValue().solution_id);
+                    list.add(balloon);
+                }
+            }
+        }
+        list.sort((a,b)->b.getAc_time().compareTo(a.getAc_time()));
+        return new ReturnType(list);
+    }
+
+    @PutMapping("acm_helper")
+    public ReturnType checkBalloon(HttpServletRequest request){
+        User user = Authentication.getUser(request);
+        boolean admin = Authentication.isAdministrator(user);
+        if (user == null || !admin) {
+            return new ReturnType("login-required", "Please login in first");
+        }
+        return new ReturnType("error","not supported");
     }
 
     @PostMapping("")

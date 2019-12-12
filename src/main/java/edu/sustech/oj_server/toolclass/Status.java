@@ -1,5 +1,7 @@
 package edu.sustech.oj_server.toolclass;
 
+import java.security.PublicKey;
+
 /**
  * the status for a submission
  * used in RankList and Balloon
@@ -11,7 +13,8 @@ public class Status{
     public Integer error_number;
     public Integer try_number;
     public Double penalty;
-
+    public Boolean checked;
+    public Integer solution_id;
 
     public Status() {
         this.is_ac=false;
@@ -60,5 +63,9 @@ public class Status{
 
     public void setTry_number(Integer try_number) {
         this.try_number = try_number;
+    }
+
+    public Boolean getChecked() {
+        return checked;
     }
 }
