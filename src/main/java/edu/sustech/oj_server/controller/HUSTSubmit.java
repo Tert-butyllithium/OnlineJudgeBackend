@@ -215,7 +215,12 @@ public final class HUSTSubmit {
             if (frozen != 0)
                 cachedRank.refresh(contest_id, frozen);
             cachedRank.refresh(contest_id, 0);
-
+        }
+        else{
+            Integer problem_id=Integer.parseInt(solution.getProblem());
+            int ac=problemDao.getProblemAC(problem_id);
+            int all=problemDao.getProblemSubmission(problem_id);
+            problemDao.updateSubmissionInfo(problem_id,ac,all);
         }
         return new ReturnType(null);
     }

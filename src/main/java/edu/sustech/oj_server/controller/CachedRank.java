@@ -73,7 +73,7 @@ public class CachedRank {
         return res;
     }
 
-    public Map<String, Solve> getUserStatus(int contest_id,int frozen) {
+    private Map<String, Solve> getUserStatus(int contest_id,int frozen) {
         Set<String> solved = new HashSet<>();
         long start = contestDao.getContest(contest_id).getStart_time().getTime();
         long end = contestDao.getContest(contest_id).getEnd_time().getTime() - frozen * 60 * 1000;

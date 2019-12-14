@@ -86,6 +86,15 @@ public interface ProblemDao {
     @Select("select count(*) from solution where solution.problem_id = #{problem_id} and solution.contest_id=#{contest_id}")
     Integer getProblemSubmissionInContest(Integer problem_id,Integer contest_id);
 
+    @Select("select count(*) from solution where solution.problem_id = #{problem_id} and solution.result=4")
+    Integer getProblemAC(Integer problem_id);
+
+    @Select("select count(*) from solution where solution.problem_id = #{problem_id}")
+    Integer getProblemSubmission(Integer problem_id);
+
+    @Update("update problem set accepted = #{ac}, submit = #{total} where problem_id=#{problem_id}")
+    void updateSubmissionInfo(Integer problem_id,Integer ac,Integer total);
+
     @Delete("delete from contest_problem where contest_id=#{contest_id} and problem_id=#{id}")
     void deleteProblemInContest(Integer id,Integer contest_id);
 

@@ -35,6 +35,8 @@ public class HUSTToQDU {
 
     public static Integer translateStatusInverse(Integer id){
         if(id==null) return null;
+        if(id==6) return 0;
+        if(id==5) return -100;
         for(int i=-2;i<=11;i++){
             if(id.equals(translateStatus(i))){
                 return i;
