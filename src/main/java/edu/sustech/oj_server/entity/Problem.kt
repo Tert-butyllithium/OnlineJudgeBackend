@@ -38,6 +38,13 @@ open class Problem {
     var contest:Int?=null
     var my_status:Int?=null
     var languages:List<String>?=null
+    var test_case_id:String?=null
+    var visible:Boolean?=null
+        set(value) {
+            field = value
+            this.defunct= if (value!!) "N" else "Y"
+        }
+
 
     constructor(id: Int?, title: String?, description: String?, input: String?, output: String?, sampleInput: String?, sampleOutput: String?, spj: String?, hint: String?, source: String?, inDate: Timestamp?, time_lim: Int, memory_limit: Int?, defunct: String?, accepted: Int, submission_number: Int, solved: Int) {
         this.id = id

@@ -2,10 +2,7 @@ package edu.sustech.oj_server.dao;
 
 import edu.sustech.oj_server.entity.Problem;
 import edu.sustech.oj_server.toolclass.Sample;
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -101,4 +98,15 @@ public interface ProblemDao {
     @Select("select input,output from extra_samples where problem_id = #{problem_id} order by id")
     List<Sample> getExtraSamples(Integer problem_id);
 
+    @Select("select AUTO_INCREMENT from information_schema.TABLES where  TABLE_SCHEMA='jol' and TABLE_NAME='problem'")
+    Integer getNextId();
+
+    @Insert("insert into problem (title, description, input, output, sample_input, sample_output, spj, hint, source, in_date, time_limit, memory_limit, defunct) " +
+            "values (#{title},#{description},#{input_description},#{output_description},${samples.get(0).getInput()},${samples.get(0).getOutput()}," +
+            "#{spj},#{hint},#{source},now(),#{time_limit}/1000,memory_limit,#{defunct})")
+    @Options(useGeneratedKeys=true, keyProperty="id")
+    Integer insertProblem(Problem problem);
+
+    @Insert("insert into extra_samples (problem_id,input,output) values (#{problem_id},#{input},#{output})")
+    void InsertExtraSamples(Integer problem_id,String input,String output);
 }
