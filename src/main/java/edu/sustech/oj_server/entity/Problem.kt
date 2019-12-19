@@ -42,7 +42,7 @@ open class Problem {
     var visible:Boolean?=null
         set(value) {
             field = value
-            this.defunct= if (value!!) "N" else "Y"
+            this.defunct= if (value==true) "N" else "Y"
         }
 
 

@@ -109,4 +109,12 @@ public interface ProblemDao {
 
     @Insert("insert into extra_samples (problem_id,input,output) values (#{problem_id},#{input},#{output})")
     void InsertExtraSamples(Integer problem_id,String input,String output);
+
+    @Update("replace into problem (problem_id,title, description, input, output, sample_input, sample_output, spj, hint, source, in_date, time_limit, memory_limit, defunct) " +
+            "values (#{id},#{title},#{description},#{input_description},#{output_description},'${samples.get(0).getInput()}','${samples.get(0).getOutput()}'," +
+            "#{spj},#{hint},#{source},now(),#{time_limit}/1000,#{memory_limit},#{defunct})")
+    void updateProblem(Problem problem);
+
+    @Delete("delete from extra_samples where problem_id=#{id}")
+    void clearExtraSamples(Integer id);
 }

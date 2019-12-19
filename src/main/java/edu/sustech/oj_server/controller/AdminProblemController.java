@@ -117,24 +117,55 @@ public class AdminProblemController {
             return new ReturnType<>("login-required", "Please login in first");
         }
 
-        if (problem.getSamples().size() == 0) {
+        if (Objects.requireNonNull(problem.getSamples()).size() == 0) {
             return new ReturnType<>("error", "No sample");
         }
         try {
             problemDao.insertProblem(problem);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ReturnType<>("error", e.getMessage());
+        }
+
+        ReturnType<?> e = moveTestData(problem);
+        if (e != null) return e;
+//        System.out.println(problem);
+        return new ReturnType<>(null);
+    }
+
+    @PutMapping("/problem")
+    public ReturnType<?> editProblem(@RequestBody Problem problem, HttpServletRequest request){
+        User user = Authentication.getUser(request);
+        boolean admin = Authentication.isAdministrator(user);
+        if (user == null || !admin) {
+            return new ReturnType<>("login-required", "Please login in first");
+        }
+
+        if (Objects.requireNonNull(problem.getSamples()).size() == 0) {
+            return new ReturnType<>("error", "No sample");
+        }
+        try {
+            problemDao.updateProblem(problem);
         }catch (Exception e){
             e.printStackTrace();
             return new ReturnType<>("error",e.getMessage());
         }
+        problemDao.clearExtraSamples(problem.getId());
 
-        if (problem.getSamples().size() > 1) {
+        ReturnType<?> e = moveTestData(problem);
+        if (e != null) return e;
+        return new ReturnType<>(null);
+    }
+
+    private ReturnType<?> moveTestData(@RequestBody Problem problem) {
+        if (Objects.requireNonNull(problem.getSamples()).size() > 1) {
             var tmp = problem.getSamples();
             for (int i = 1; i < tmp.size(); i++) {
                 problemDao.InsertExtraSamples(problem.getId(), tmp.get(i).getInput(), tmp.get(i).getOutput());
             }
         }
         //Not, Here I move the file to a local path (SHOULD BE SERVICE)
-        if(problem.getTest_case_id()!=null&&problem.getTest_case_id().length()>0) {
+        if (problem.getTest_case_id() != null && problem.getTest_case_id().length() > 0) {
             Path dest = Path.of("/home/judge/data/" + problem.getId());
             try {
                 if (!Files.exists(dest)) {
@@ -154,15 +185,14 @@ public class AdminProblemController {
                 return new ReturnType<>("error", e.getMessage());
             }
         }
-//        System.out.println(problem);
-        return new ReturnType<>(null);
+        return null;
     }
 
 
     private void moveFolder(Path src, Path dest) throws IOException {
         Files.walk(src).forEach(source -> {
             try {
-                if(!Files.isDirectory(source))
+                if (!Files.isDirectory(source))
                     Files.move(source, dest.resolve(src.relativize(source)), StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException e) {
                 e.printStackTrace();
