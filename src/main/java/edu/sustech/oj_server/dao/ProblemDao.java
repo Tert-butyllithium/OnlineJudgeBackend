@@ -102,8 +102,8 @@ public interface ProblemDao {
     Integer getNextId();
 
     @Insert("insert into problem (title, description, input, output, sample_input, sample_output, spj, hint, source, in_date, time_limit, memory_limit, defunct) " +
-            "values (#{title},#{description},#{input_description},#{output_description},${samples.get(0).getInput()},${samples.get(0).getOutput()}," +
-            "#{spj},#{hint},#{source},now(),#{time_limit}/1000,memory_limit,#{defunct})")
+            "values (#{title},#{description},#{input_description},#{output_description},'${samples.get(0).getInput()}','${samples.get(0).getOutput()}'," +
+            "#{spj},#{hint},#{source},now(),#{time_limit}/1000,#{memory_limit},#{defunct})")
     @Options(useGeneratedKeys=true, keyProperty="id")
     Integer insertProblem(Problem problem);
 

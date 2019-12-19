@@ -134,24 +134,25 @@ public class AdminProblemController {
             }
         }
         //Not, Here I move the file to a local path (SHOULD BE SERVICE)
-        Path dest=Path.of("/home/judge/"+problem.getId());
-        try {
-            if (!Files.exists(dest)) {
-                Files.createDirectories(dest);
+        if(problem.getTest_case_id()!=null&&problem.getTest_case_id().length()>0) {
+            Path dest = Path.of("/home/judge/data/" + problem.getId());
+            try {
+                if (!Files.exists(dest)) {
+                    Files.createDirectories(dest);
+                } else {
+                    Files.walk(dest).forEach(file -> {
+                        try {
+                            Files.deleteIfExists(file);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    });
+                }
+                moveFolder(Path.of("tmp" + File.separator + problem.getTest_case_id()), dest);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return new ReturnType<>("error", e.getMessage());
             }
-            else{
-                Files.walk(dest).forEach(file-> {
-                    try {
-                        Files.deleteIfExists(file);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                });
-            }
-            moveFolder(Path.of("tmp" + File.separator + problem.getTest_case_id()),dest);
-        }catch (Exception e){
-            e.printStackTrace();
-            return new ReturnType<>("error",e.getMessage());
         }
 //        System.out.println(problem);
         return new ReturnType<>(null);
