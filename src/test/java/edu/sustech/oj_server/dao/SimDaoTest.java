@@ -1,10 +1,13 @@
 package edu.sustech.oj_server.dao;
 
+import edu.sustech.oj_server.entity.Sim;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -13,8 +16,15 @@ import static org.junit.Assert.*;
 public class SimDaoTest {
     @Autowired
     private SimDao simDao;
+
     @Test
     public void getSimList() {
-        System.out.println(simDao.getSimList(1076).size());
+        List<Sim> simList =simDao.getSimList(1076);
+        simList.forEach(System.out::println);
+    }
+
+    @Test
+    public void getSim() {
+
     }
 }

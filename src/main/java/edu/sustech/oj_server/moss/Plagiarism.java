@@ -63,7 +63,6 @@ public class Plagiarism {
         ArrayList<Info> result = new ArrayList<>();
         for (int language=0; language<=6; ++language){//for each language
             for (Problem pb: problems){// for each problem
-                System.out.printf("%d %d\n",language, pb.getId());
                 URL url;
                 if ((url=getMossURL(contestId, pb.getId(), language))==null) continue;
                 MossParser mossParser = new MossParser(url);
@@ -89,6 +88,9 @@ public class Plagiarism {
                 break;
             }catch (MossException e){
                 System.out.println("MossException: Retrying");
+                e.printStackTrace();
+            }catch (IOException e){
+                System.out.println("Connection refused: Retrying");
                 e.printStackTrace();
             }
         }

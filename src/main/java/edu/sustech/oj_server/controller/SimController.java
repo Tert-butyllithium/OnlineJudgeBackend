@@ -4,6 +4,7 @@ import edu.sustech.oj_server.dao.SimDao;
 import edu.sustech.oj_server.dao.SourceCodeDao;
 import edu.sustech.oj_server.entity.Sim;
 import edu.sustech.oj_server.entity.SourceCode;
+import edu.sustech.oj_server.moss.Plagiarism;
 import edu.sustech.oj_server.util.ReturnListType;
 import edu.sustech.oj_server.util.ReturnType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,5 +46,22 @@ public class SimController {
         ArrayList<Sim> sims = (ArrayList<Sim>) simDao.getSimList(contestId);
         model.addAttribute("list", sims);
         return "SimList";
+    }
+
+    @RequestMapping("api/dosim")
+    public String doSim(@RequestParam("contest") int contestId, Model model) throws InterruptedException {
+        Plagiarism plagiarism = new Plagiarism();
+        String msg="";
+        try {
+            plagiarism.run(contestId);
+        } catch (IOException e) {
+            e.printStackTrace();
+            msg="Connection refused, try again";
+            model.addAttribute("msg", msg);
+            return "dosim";
+        }
+        msg="Everything is done.";
+        model.addAttribute("msg", msg);
+        return "dosim";
     }
 }
