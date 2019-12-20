@@ -1,6 +1,8 @@
 package edu.sustech.oj_server.moss;
 
-import edu.sustech.oj_server.entity.Sim;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -19,6 +21,8 @@ public class MossParser {
     private URL url;
     private BufferedReader reader;
 
+    private Integer upper_bound=30;
+
     public MossParser(URL url) throws IOException {
         this.url=url;
         InputStream in = url.openStream();
@@ -29,10 +33,10 @@ public class MossParser {
         ArrayList<Info> infos = new ArrayList<>();
         Info result;
         while ((result = getTableRow())!=null){
-            if (result.isTheSameUser() || result.getSim()<70) continue; //not significant enough or source from the same one
+            if (result.isTheSameUser() || result.getSim()<upper_bound) continue; //not significant enough or source from the same one
             infos.add(result);
-            System.out.println(result);
         }
+        reader.close();
         return infos;
     }
     public Info getTableRow() throws IOException {
@@ -73,10 +77,5 @@ public class MossParser {
             }
         }
         return null;
-    }
-
-    public static void main(String[] args) throws IOException {
-        MossParser mossParser = new MossParser(new URL("http://moss.stanford.edu/results/246240969/"));
-        mossParser.parse();
     }
 }

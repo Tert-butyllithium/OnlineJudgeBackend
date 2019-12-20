@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="utf-8">
+    <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+</head>
+<body>
+<table align="center" width="100%" border="1" cellpadding="0" cellspacing="0" style="table-layout: fixed;">
+    <caption>Sim List</caption>
+    <thread>
+        <tr>
+            <th>problem</th>
+            <th>s_id</th>
+            <th>s_username</th>
+            <th>sim_s_id</th>
+            <th>sim_username</th>
+            <th>sim</th>
+        </tr>
+    </thread>
+    <tbody>
+    <tr th:each="sim:${list}">
+        <td th:text="${sim.getProblem()}"></td>
+        <td>
+            <a th:href="'sim?s_id='+ ${sim.getS_id()}+'&sim_s_id='+${sim.getSim_s_id()}"
+               th:text="${sim.getS_id()}"></a>
+        </td>
+        <td th:text="${sim.getS_username()}"></td>
+        <td>
+            <a th:href="'sim?s_id='+ ${sim.getS_id()}+'&sim_s_id='+${sim.getSim_s_id()}"
+               th:text="${sim.getSim_s_id()}"></a>
+        </td>
+        <td th:text="${sim.getSim_username()}"></td>
+        <td th:text="${sim.getPer()}"></td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

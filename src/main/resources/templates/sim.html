@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+</head>
+<body>
+<table id="sim" align="center" width="100%" border="1" cellpadding="0" cellspacing="0" style="table-layout: fixed;">
+    <caption id="sim_title">Source Code Compare</caption>
+    <thread>
+        <tr>
+            <th th:text="'problemID:'+${pair.getData().getResults()[0].getProblem()}+
+            '/userID:'+${pair.getData().getResults()[0].getUsername()}+
+            '/solutionID:'+${pair.getData().getResults()[0].getId()}"></th>
+
+            <th th:text="'problemID:'+${pair.getData().getResults()[1].getProblem()}+
+            '/userID:'+${pair.getData().getResults()[1].getUsername()}+
+            '/solutionID:'+${pair.getData().getResults()[1].getId()}"></th>
+        </tr>
+    </thread>
+    <tbody>
+    <tr>
+        <td><pre class="prettyprint" th:text="${pair.getData().getResults()[0].getCode()}" style="white-space: pre-wrap"></pre></td>
+        <td><pre class="prettyprint" th:text="${pair.getData().getResults()[1].getCode()}" style="white-space: pre-wrap"></pre></td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

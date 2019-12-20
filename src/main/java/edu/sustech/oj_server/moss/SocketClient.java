@@ -4,16 +4,12 @@ import edu.sustech.oj_server.entity.SourceCode;
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.tomcat.jni.Local;
 
-import javax.xml.transform.Source;
 import java.io.*;
-import java.lang.reflect.Array;
 import java.net.MalformedURLException;
 import java.net.Socket;
 import java.net.URL;
 import java.net.UnknownHostException;
-import java.nio.charset.Charset;
 import java.text.Normalizer;
 import java.util.*;
 
@@ -34,7 +30,7 @@ public class SocketClient {
 	private String userID;
 	private String language;
 	private int setID = STARTING_SETID;
-	private long optM = 100;
+	private long optM = 10000;
 	private int optD = 0;
 	private int optX = 0;
 	private long optN = 5000;
@@ -204,9 +200,7 @@ public class SocketClient {
 	}
 
 	private String readFromServer() throws IOException {
-		char[] s= new char[100];
-		in.read(s);
-		return new String(s);
+		return in.readLine();
 	}
 	private void run() throws MossException, IOException, UnknownHostException {
 		connect();
@@ -268,6 +262,7 @@ public class SocketClient {
 					"Language already sent or client is not initialized yet.");
 		}
 		sendCommand("language", language);
+		System.out.printf("Language sent: %s\n", language);
 		// confirm valid language server-side
 		String serverString;
 		serverString = readFromServer();
@@ -289,6 +284,7 @@ public class SocketClient {
 		}
 		sendCommand(String.format(Locale.ENGLISH, "%s %d %s", "query", 0, optC));
 		currentStage = Stage.AWAITING_RESULTS;
+		System.out.println("Query Submited.");
 		// Query submitted, waiting for server's response
 		String result = readFromServer();
 		System.out.println(result);
@@ -335,7 +331,7 @@ public class SocketClient {
 				 */
 				filename); // 4. file path
 		System.out.println("uploading file: " + filename);
-		out.write(uploadString.getBytes(Charsets.US_ASCII));
+		out.write(uploadString.getBytes(Charsets.UTF_8));
 		out.write(fileBytes);
 		currentStage = Stage.AWAITING_QUERY;
 
@@ -355,7 +351,7 @@ public class SocketClient {
 				codeBytes.length,
 				identifier);
 		System.out.println("Uploading file: " + identifier);
-		out.write(uploadString.getBytes(Charsets.US_ASCII));
+		out.write(uploadString.getBytes(Charsets.UTF_8));
 		out.write(codeBytes);
 		currentStage=Stage.AWAITING_QUERY;
 	}
@@ -377,6 +373,10 @@ public class SocketClient {
 
 	public URL request() throws IOException, MossException {
 		run();
+		File baseDir=new File(this.getClass().getClassLoader().getResource("basefile").getPath());
+		for (File file: baseDir.listFiles()){
+			uploadBaseFile(file);
+		}
 		for (SourceCode sourceCode: sourceCodeBuffer){
 			uploadContent(sourceCode.getId()+"/"+sourceCode.getUser_id(),sourceCode.getCode());
 		}
@@ -393,26 +393,17 @@ public class SocketClient {
 
 	public static void main(String[] args) throws IOException, MossException {
 		SocketClient socketClient = new SocketClient();
-		socketClient.connect();
-		URL result;
-
-		socketClient.sendInitialization();
-		socketClient.sendLanguage();
-		socketClient.uploadContent("1111", "Class { public static void main(){}}");
-		socketClient.uploadContent("2222","Class { public static void main(){}}");
-		socketClient.sendQuery();
-		result=socketClient.getResultURL();
-		socketClient.close();
-		System.out.println(result);
-
-		socketClient = new SocketClient();
-		socketClient.connect();
-		socketClient.sendInitialization();
-		socketClient.sendLanguage();
-		socketClient.uploadContent("3333", "Class { public static void main(){}}");
-		socketClient.uploadContent("4444","Class { public static void main(){}}");
-		socketClient.sendQuery();
-		result=socketClient.getResultURL();
-		System.out.println(result);
+		socketClient.init();
+//		socketClient.run();
+//		String path="/home/bigbang/IDEA/GoGoTianXiaDiYi/src/main/java/edu/sustech/oj_server/moss/";
+//		socketClient.uploadBaseFile(new File(path+"input"));
+//		socketClient.uploadBaseFile(new File(path+"reader"));
+//		socketClient.uploadBaseFile(new File(path+"printer"));
+//		socketClient.uploadFile(new File(path+"input"));
+//		socketClient.uploadFile(new File(path+"input"));
+//		socketClient.sendQuery();
+//		System.out.println(socketClient.getResultURL());
+//		socketClient.close();
 	}
+
 }
