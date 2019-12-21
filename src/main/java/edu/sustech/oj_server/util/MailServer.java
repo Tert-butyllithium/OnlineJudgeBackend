@@ -40,7 +40,7 @@ public class MailServer {
         msgHelper.setFrom(emailUser);
         msgHelper.setTo(target);
         msgHelper.setSubject(subject);
-        msgHelper.setText(text,true);
+        msgHelper.setText(text);
 
         FileSystemResource file = new FileSystemResource(new File(filepath));
         msgHelper.addAttachment(filename,file);

@@ -39,7 +39,9 @@ public class AdminProblemController {
             var res = problemDao.listAllProblemsForAdmin(keyword, offset, limit);
             return new ReturnType<>(new ReturnListType<>(res, problemDao.getNumForAdmin(keyword)));
         } else {
-            return new ReturnType<>(problemDao.getProblem(id));
+            var res = problemDao.getProblem(id);
+            Objects.requireNonNull(res.getSamples()).addAll(problemDao.getExtraSamples(id));
+            return new ReturnType<>(res);
         }
     }
 
@@ -65,6 +67,9 @@ public class AdminProblemController {
             ZipEntry ze = zis.getNextEntry();
             while (ze != null) {
                 String filename = ze.getName();
+                if(ze.isDirectory()){
+                    continue;
+                }
                 if (filename.endsWith(".in")) {
                     String filenameWithoutExt = filename.substring(0, filename.length() - 3);
                     if (cases.containsKey(filenameWithoutExt)) {
@@ -117,6 +122,7 @@ public class AdminProblemController {
             return new ReturnType<>("login-required", "Please login in first");
         }
 
+        addBlank(problem);
         if (Objects.requireNonNull(problem.getSamples()).size() == 0) {
             return new ReturnType<>("error", "No sample");
         }
@@ -140,7 +146,7 @@ public class AdminProblemController {
         if (user == null || !admin) {
             return new ReturnType<>("login-required", "Please login in first");
         }
-
+        addBlank(problem);
         if (Objects.requireNonNull(problem.getSamples()).size() == 0) {
             return new ReturnType<>("error", "No sample");
         }
@@ -168,17 +174,7 @@ public class AdminProblemController {
         if (problem.getTest_case_id() != null && problem.getTest_case_id().length() > 0) {
             Path dest = Path.of("/home/judge/data/" + problem.getId());
             try {
-                if (!Files.exists(dest)) {
-                    Files.createDirectories(dest);
-                } else {
-                    Files.walk(dest).forEach(file -> {
-                        try {
-                            Files.deleteIfExists(file);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    });
-                }
+                deletePath(dest);
                 moveFolder(Path.of("tmp" + File.separator + problem.getTest_case_id()), dest);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -186,6 +182,41 @@ public class AdminProblemController {
             }
         }
         return null;
+    }
+
+    private void deletePath(Path path) throws IOException{
+        if(path==null) return;
+        if(!Files.exists(path)){
+            return;
+        }
+        Files.walk(path).forEach(file->{
+            if(file.toFile().isDirectory()){
+                try {
+                    deletePath(file);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            else {
+                try {
+                    Files.deleteIfExists(file);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        Files.deleteIfExists(path);
+    }
+
+    private void addBlank(Problem problem){
+        problem.setDescription(addBlank(Objects.requireNonNull(problem.getDescription())));
+        problem.setInput_description(addBlank(Objects.requireNonNull(problem.getInput_description())));
+        problem.setOutput_description(addBlank(Objects.requireNonNull(problem.getOutput_description())));
+        problem.setHint(addBlank(Objects.requireNonNull(problem.getHint())));
+    }
+
+    private String addBlank(String str){
+        return str.replaceAll("<"," <").replaceAll(">","> ");
     }
 
 
@@ -198,7 +229,8 @@ public class AdminProblemController {
                 e.printStackTrace();
             }
         });
-        Files.deleteIfExists(src);
+//        Files.deleteIfExists(src);
+        deletePath(src);
     }
 
 }
