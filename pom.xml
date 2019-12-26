@@ -10,7 +10,7 @@
     </parent>
     <groupId>edu.sustech</groupId>
     <artifactId>oj_server</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
     <name>oj_server</name>
     <description>backend of our OJ </description>
 

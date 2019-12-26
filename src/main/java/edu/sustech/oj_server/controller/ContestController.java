@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.http.HttpRequest;
+import java.sql.Timestamp;
 import java.util.*;
 
 @RestController
@@ -56,7 +57,11 @@ public class ContestController {
             List<Problem> problems=new ArrayList<>();
             for(int i=0;i<res.size();i++){
                 var p=problemDao.getProblem(res.get(i));
-                p.setAccepted_number(problemDao.getProblemACinContest(res.get(i),contest_id));
+                Integer frozen=contestDao.getFrozen(contest_id);
+                if(frozen==null) {
+                    p.setAccepted_number(problemDao.getProblemACinContest(res.get(i), contest_id));
+                    problemDao.updateProblem(p);
+                }
                 p.setSubmission_number(problemDao.getProblemSubmissionInContest(res.get(i),contest_id));
                 p.set_id(String.valueOf((char)('A'+i)));
                 if(user!=null){
@@ -77,7 +82,9 @@ public class ContestController {
 //            var res=problemDao.getProblemInContest(contest_id,num);
             var list=contestDao.getProblemsID(contest_id);
             var res=problemDao.getProblem(list.get(num));
-            if(res==null){
+            Contest contest=contestDao.getContest(contest_id);
+            var now=new Timestamp(System.currentTimeMillis());
+            if(res==null||now.before(contest.getStart_time())){
                 return new ReturnType<>("error","No such problem");
             }
             res.setTime_limit(res.getTime_limit());

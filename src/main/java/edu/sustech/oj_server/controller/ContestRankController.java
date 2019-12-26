@@ -105,20 +105,24 @@ public class ContestRankController {
         }
         var ranklist=cachedRank.getRank(id,0);
         ArrayList res=new ArrayList();
-        for(var c:ranklist){
-            if(Objects.equals(c.getUser().getId(), user.getId())){
-                long end=contestDao.getContest(id).getEnd_time().getTime();
-                try {
-                    Solve solve = (Solve) c.clone();
-                    if (end - frozen * 60 * 1000 < System.currentTimeMillis()) {
-                        solve.setRank("?");
+        try {
+            for(var c:ranklist){
+                if(Objects.equals(c.getUser().getId(), user.getId())){
+                    long end=contestDao.getContest(id).getEnd_time().getTime();
+                    try {
+                        Solve solve = (Solve) c.clone();
+                        if (end - frozen * 60 * 1000 < System.currentTimeMillis()) {
+                            solve.setRank("?");
+                        }
+                        res.add(solve);
+                    }catch (Exception e){
+                        e.printStackTrace();
                     }
-                    res.add(solve);
-                }catch (Exception e){
-                    e.printStackTrace();
+                    return new ReturnType<>(new ReturnListType(res,1));
                 }
-                return new ReturnType<>(new ReturnListType(res,1));
             }
+        }catch (Exception e){
+            return new ReturnType<>(new ReturnListType(new ArrayList(),0));
         }
         return new ReturnType<>(new ReturnListType(new ArrayList(),0));
     }
