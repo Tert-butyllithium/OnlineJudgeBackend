@@ -15,6 +15,10 @@ public interface ProblemDao {
             "from problem where problem_id=(select problem_id from contest_problem where contest_problem.num=#{num} and contest_id=#{contest_id})")
     Problem getProblemInContest(int contest_id,int num);
 
+    @Select("select problem_id, title, description, input, output, sample_input, sample_output, spj, hint, source, in_date, time_limit, memory_limit, defunct, accepted, submit, solved\n" +
+            "from problem where problem_id in (select problem_id from contest_problem where contest_id=#{contest_id})")
+    List<Problem> getProblemsInContest(int contest_id);
+
     @Select("select num from contest_problem where contest_id=#{contest_id} and problem_id=#{problem_id}")
     Integer getNumInContest(int contest_id,int problem_id);
 

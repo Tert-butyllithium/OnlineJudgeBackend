@@ -17,6 +17,9 @@ public interface ContestDao {
     @Select("select frozen_time from contest where contest_id = #{id}")
     Integer getFrozen(int id);
 
+    @Select("select * from contest order by contest_id desc")
+    List<Contest> listAll();
+
     @Select("select * from contest order by contest_id desc limit #{limit} offset #{offset}")
     List<Contest> listAllContest(int offset,int limit);
 
