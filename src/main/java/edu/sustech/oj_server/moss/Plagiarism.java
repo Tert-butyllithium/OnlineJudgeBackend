@@ -60,6 +60,7 @@ public class Plagiarism {
     }
     public void run(int contestId) throws IOException {
         List<Problem> problems= pd.getProblemsInContest(contestId);
+        System.out.println(problems.size());
         ArrayList<Info> result = new ArrayList<>();
         for (int language=0; language<=6; ++language){//for each language
             for (Problem pb: problems){// for each problem
@@ -91,6 +92,9 @@ public class Plagiarism {
                 e.printStackTrace();
             }catch (IOException e){
                 System.out.println("Connection refused: Retrying");
+                e.printStackTrace();
+            }catch (Exception e){
+                System.out.println("Maybe Network Error: Retrying");
                 e.printStackTrace();
             }
         }

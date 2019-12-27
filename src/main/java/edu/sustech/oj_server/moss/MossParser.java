@@ -17,7 +17,7 @@ public class MossParser {
     private URL url;
     private BufferedReader reader;
 
-    private Integer upper_bound=30;
+    private Integer upper_bound=50;
 
     public MossParser(URL url) throws IOException {
         this.url=url;
